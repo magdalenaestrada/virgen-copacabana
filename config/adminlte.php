@@ -63,7 +63,9 @@ return [
     |
     */
 
-    'logo' => '<b>AGROINDUSTRIAL VIRGENCITA DE COPACABANA</b>',
+    'logo' => '<span style="font-size: 12px; line-height: 14px; display:block; text-align:center;">
+              <b>AGROINDUSTRIAL VIRGENCITA<br>DE COPACABANA</b>
+          </span>',
     'logo_img' => 'vendor/adminlte/dist/img/virgen.jpeg',
     'logo_img_class' => 'brand-image  ',
     'logo_img_xl' => null,
@@ -452,7 +454,7 @@ return [
                 ],
             ],
         ],
-        
+
 
         ['header' => 'COMEDOR', 'can' => 'ver producto'],
 
