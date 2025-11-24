@@ -127,7 +127,7 @@ class LqClienteController extends Controller
             $anio = Carbon::now("America/Lima")->format("y");
             $codigo = 'AG' . $anio . '-' . $nuevo_codigo;
         } else {
-            $codigo = 'AG-0001';
+            $codigo = 'VC-0001';
         }
         return $codigo;
     }

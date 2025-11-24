@@ -13,7 +13,7 @@
     <br>
     <div class="container">
         <div class="text-end">
-            <img style="width: 100px" src="{{asset('images/terra_mining.jpg')}}" alt="">
+            <img style="width: 100px" src="{{asset('images/virgen.png')}}" alt="">
         </div>
 
         <div class="text-center" style="margin-top: -10%">
@@ -21,7 +21,7 @@
             <br>
         </div>
         <hr>
-        <h5><strong>REQUERIMIENTO:</strong> AF-{{ $inventariosalida->id }}</h5>
+        <h5><strong>REQUERIMIENTO:</strong> VC-{{ $inventariosalida->id }}</h5>
         <hr>
         <br>
 

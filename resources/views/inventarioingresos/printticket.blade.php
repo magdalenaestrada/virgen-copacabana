@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>Orden de compra #AF-{{ $inventarioingreso->id }}</title>
+  <title>Orden de compra #VC-{{ $inventarioingreso->id }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root{
@@ -60,21 +60,21 @@
 <body>
   <!-- Marca de agua -->
   <div class="watermark">
-    <img src="{{ asset('images/terra_mining.jpg') }}" alt="Marca de agua">
+    <img src="{{ asset('images/virgen.png') }}" alt="Marca de agua">
   </div>
 
   <div class="doc">
     <!-- Header -->
     <div class="doc-header">
       <div class="brand">
-        <img src="{{ asset('images/terra_mining.jpg') }}" alt="Logo">
+        <img src="{{ asset('images/virgen.png') }}" alt="Logo">
         <div>
-          <div style="font-weight:700">TERRA MINING S.R.L</div>
-          <div class="muted" style="font-size:11px">RUC 20606498781</div>
+          <div style="font-weight:700">AGROINDUSTRIAL VIRGENCITA DE COPACABANA S.A.C</div>
+          <div class="muted" style="font-size:11px">RUC 20614686759</div>
         </div>
       </div>
       <div class="text-end">
-        <div><span class="muted">Orden:</span> <strong>AF-{{ $inventarioingreso->id }}</strong></div>
+        <div><span class="muted">Orden:</span> <strong>VC-{{ $inventarioingreso->id }}</strong></div>
         <div>Nasca, {{ $inventarioingreso->created_at->day }}
           de {{ \Illuminate\Support\Str::ucfirst($inventarioingreso->created_at->translatedFormat('F')) }}
           del {{ $inventarioingreso->created_at->year }}</div>
@@ -88,8 +88,8 @@
     <div class="grid-2">
       <div class="card">
         <h4>Datos del Cliente</h4>
-        <div class="kv"><div class="label">Razón Social</div><div class="value">TERRA MINING S.R.L</div></div>
-        <div class="kv"><div class="label">RUC</div><div class="value">20606498781</div></div>
+        <div class="kv"><div class="label">Razón Social</div><div class="value">AGROINDUSTRIAL VIRGENCITA DE COPACABANA S.A.C</div></div>
+        <div class="kv"><div class="label">RUC</div><div class="value">20614686759</div></div>
         <div class="kv"><div class="label">Estado</div><div class="value">{{ $inventarioingreso->estado }}</div></div>
         <div class="kv"><div class="label">Cotización</div><div class="value">{{ $inventarioingreso->cotizacion }}</div></div>
       </div>

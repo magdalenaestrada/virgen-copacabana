@@ -13,7 +13,7 @@
     <br>
     <div class="container">
         <div class="text-end">
-            <img style="width: 90px" src="{{ asset('images/terra_mining.jpg') }}" alt="">
+            <img style="width: 90px" src="{{ asset('images/virgen.png') }}" alt="">
         </div>
 
         <div class="text-center" style="margin-top: -10%">
@@ -24,12 +24,12 @@
         @if ($invsalidarapida->estado == 'ANULADO')
             <p class="h2" style="color:red">SALIDA ANULADA</p>
         @endif
-        <h5><strong>SALIDA:</strong> AF-{{ $invsalidarapida->id }}</h5>
+        <h5><strong>SALIDA:</strong> VC-{{ $invsalidarapida->id }}</h5>
         <hr>
         <br>
         <p><strong>Fecha de creación de la salida:</strong> {{ $invsalidarapida->created_at }}</p>
-        <p><strong>Empresa: </strong>TERRA MINING S.R.L</p>
-        <p><strong>Ruc: </strong>20606498781</p>
+        <p><strong>Empresa: </strong>AGROINDUSTRIAL VIRGENCITA DE COPACABANA S.A.C</p>
+        <p><strong>Ruc: </strong>20614686759</p>
 
         <p><strong>Solicitante: </strong>{{ $invsalidarapida->nombre_solicitante }}</p>
         <p><strong>Dni del solicitante: </strong>{{ $invsalidarapida->documento_solicitante }}</p>

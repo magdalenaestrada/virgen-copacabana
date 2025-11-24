@@ -13,7 +13,7 @@
     <div class="container pt-2">
         <br>
         <div class="text-end">
-            <img  style="width: 90px; margin-top: -1%" src="{{asset('images/terra_mining.jpg')}}" alt="">
+            <img  style="width: 90px; margin-top: -1%" src="{{asset('images/virgen.png')}}" alt="">
         </div>
 
         <div class="text-center" style="margin-top: -8%;">
@@ -27,7 +27,7 @@
 
         <div style="margin-top: -1.5%;" class="d-flex justify-content-between align-items-center">
             <h5 class="fs-6"><strong>SERIE:</strong> 003</h5>
-            <h5 class="fs-6"><strong>RECIBO:</strong> AF-{{ $reposicioncaja->id }}</h5>
+            <h5 class="fs-6"><strong>RECIBO:</strong> VC-{{ $reposicioncaja->id }}</h5>
             <div style="width: 200px">
                 
 
@@ -165,7 +165,7 @@
     <div class="container pt-2">
         <br>
         <div class="text-end">
-            <img  style="width: 90px; margin-top: -1%" src="{{asset('images/terra_mining.jpg')}}" alt="">
+            <img  style="width: 90px; margin-top: -1%" src="{{asset('images/virgen.png')}}" alt="">
         </div>
 
         <div class="text-center" style="margin-top: -8%;">
@@ -179,7 +179,7 @@
 
         <div style="margin-top: -1.5%;" class="d-flex justify-content-between align-items-center">
             <h5 class="fs-6"><strong>SERIE:</strong> 003</h5>
-            <h5 class="fs-6"><strong>RECIBO:</strong> AF-{{ $reposicioncaja->id }}</h5>
+            <h5 class="fs-6"><strong>RECIBO:</strong> VC-{{ $reposicioncaja->id }}</h5>
             <div style="width: 200px">
                 
 

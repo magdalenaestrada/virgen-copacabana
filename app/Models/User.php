@@ -61,7 +61,7 @@ class User extends Authenticatable
     }
 
     public function adminlte_desc(){
-        return "Miembro terra mining";
+        return "Miembro agroindustrail copacabana";
     }
 
 

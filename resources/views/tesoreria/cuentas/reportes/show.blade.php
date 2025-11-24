@@ -347,7 +347,7 @@
                     <div class="col-md-6">
                         <div class="caja-card mb-5">
                             <div class="card__info">
-                                <div class="card__logo">Innova Mining</div>
+                                <div class="card__logo">Agroindustrial Virgen de Copacabana</div>
                                 <div class="card__chip">
                                     <svg class="card__chip-lines" role="img" width="20px" height="20px"
                                         viewBox="0 0 100 100" aria-label="Chip">
@@ -401,7 +401,7 @@
                                 </div>
                                 <div class="card__valid-thru" aria-label="Valid thru">Fecha<br>creac</div>
                                 <div class="card__exp-date">{{ $cuenta->created_at->format('m/Y') }}</div>
-                                <div class="card__name" aria-label="Dee Stroyer">SISTEMA TERRA MINING</div>
+                                <div class="card__name" aria-label="Dee Stroyer">SISTEMA AGROINDUSTRIAL VIRGENCITA DE COPACABANA</div>
                                 <div class="card__vendor" role="img" aria-labelledby="card-vendor">
                                     <span id="card-vendor" class="card__vendor-sr"></span>
                                 </div>

@@ -28,11 +28,11 @@
 
     <div class="container">
     <br>
-        <p class="text-center mr-1" style="margin-bottom: -5px">TERRA MINING S.R.L</p>
+        <p class="text-center mr-1" style="margin-bottom: -5px">AGROINDUSTRIAL VIRGENCITA DE COPACABANA S.A.C</p>
 
 
 
-        <p class="text-center" style="margin-bottom: -5px">{{ __('TICKET') }} TERRA MINING - {{ $rancho->id }}</p>
+        <p class="text-center" style="margin-bottom: -5px">{{ __('TICKET') }} AGROINDUSTRIAL VIRGENCITA DE COPACABANA - {{ $rancho->id }}</p>
 
 
         <p class="text-center" style="margin-bottom: -5px">

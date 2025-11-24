@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Terra Mining') }}</title>
+    <title>{{ config('app.name', 'Agroindustrial Virgencita de Copacabana') }}</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -43,12 +43,12 @@
                     <div class="col-md-12">
                         <div class="card-header">
                             <div class="text-end">
-                                <img style="width: 80px" src="{{ asset('images/terra_mining.jpg') }}" alt="">
+                                <img style="width: 80px" src="{{ asset('images/virgen.png') }}" alt="">
                             </div>
                             <div class="text-center" style="margin-top: -8%">
 
                                 <h6 class="mb-5">
-                                    {{ __('LIQ. COMEDOR') }} - TERRA MINING
+                                    {{ __('LIQ. COMEDOR') }} - AGROINDUSTRIAL VIRGENCITA DE COPACABANA
                                 </h6>
 
 

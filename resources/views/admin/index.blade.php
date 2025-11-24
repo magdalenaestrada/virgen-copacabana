@@ -48,7 +48,7 @@
                 <span class="shadow"></span>
             </div>
         </div>
-        <h1>TERRA MINING S.R.L</h1>
+        <h1>AGROINDUSTRIAL VIRGENCITA DE COPACABANA S.A.C</h1>
         <div class="pyramid-loader">
             <div class="wrapper">
                 <span class="side side1"></span>

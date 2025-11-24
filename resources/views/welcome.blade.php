@@ -9,7 +9,7 @@
     <meta name="mobile-web-app-capable" content="yes">
 
 
-    <title>TERRA MINING</title>
+    <title>AGROINDUSTRIAL VIRGENCITA DE COPACABANA</title>
 
 
     <!-- Fonts -->
@@ -62,7 +62,7 @@
             </script>
         </ul>
         <div style="margin-top: 27px" id="flipdown" class="flipdown"></div>
-        <h1>Terra Mining S.R.L</h1>
+        <h1> AGROINDUSTRIAL VIRGENCITA DE COPACABANA S.A.C.</h1>
 
       
 

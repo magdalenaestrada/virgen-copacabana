@@ -15,7 +15,7 @@ return [
     */
 
     'title' => '',
-    'title_prefix' => 'SISTEMA TERRA MINING |',
+    'title_prefix' => 'SISTEMA AGROINDUSTRIAL VIRGENCITA DE COPACABANA |',
     'title_postfix' => '',
 
     /*
@@ -63,12 +63,12 @@ return [
     |
     */
 
-    'logo' => '<b>TERRA MINING</b>',
-    'logo_img' => 'vendor/adminlte/dist/img/terra_mining.jpg',
+    'logo' => '<b>AGROINDUSTRIAL VIRGENCITA DE COPACABANA</b>',
+    'logo_img' => 'vendor/adminlte/dist/img/virgen.jpeg',
     'logo_img_class' => 'brand-image  ',
     'logo_img_xl' => null,
     'logo_img_xl_class' => '',
-    'logo_img_alt' => 'TERRA MINING LOGO',
+    'logo_img_alt' => 'AGROINDUSTRIAL VIRGENCITA DE COPACABANA LOGO',
 
     /*
     |--------------------------------------------------------------------------
@@ -113,8 +113,8 @@ return [
         'enabled' => false,
         'mode' => 'fullscreen',
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/terra_mining.jpg',
-            'alt' => 'Terra mining logo preloader imagw',
+            'path' => 'vendor/adminlte/dist/img/virgen.png',
+            'alt' => ' Agroindustrial logo preloader imagw',
             'effect' => 'animation__shake',
             'width' => 60,
             'height' => 60,
