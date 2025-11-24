@@ -64,9 +64,6 @@ class ProveedorController extends Controller
         //
     }
 
-
-
-
     public function searchProveedor(Request $request)
     {
         $proveedor = Proveedor::where('razon_social', '=', $request->search_string)->firstOrFail();

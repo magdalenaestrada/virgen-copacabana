@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('documento');
             $table->string('nombre');
             $table->unsignedBigInteger('creador_id');
-            
             $table->timestamps();
             $table->foreign('creador_id')->references('id')->on('users')->onDelete('restrict');
         });

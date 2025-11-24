@@ -264,7 +264,6 @@ class RegistroController extends Controller
             return redirect()->route('registros.index')->with('error', 'Error al eliminar el registro: ' . $e->getMessage());
         }
     }
-
     public function buscarDocumento(Request $request)
     {
         $documento = $request->input('documento');

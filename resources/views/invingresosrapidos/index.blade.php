@@ -13,37 +13,45 @@
                             {{ __('INGRESOS RÁPIDOS REGISTRADOS') }}
 
                         </div>
+                    </div>
+                    <div class="row align-items-center justify-content-between p-3">
+
+                        <div class="col-md-6  input-container">
+                            <input type="text" name="searchi" id="searchi" class="input-search form-control"
+                                placeholder="Buscar Aquí...">
+                        </div>
                         <div class="col-md-6 text-right">
                             <a class="btn btn-sm btn-special" href="#" data-toggle="modal" data-target="#ModalCreate">
                                 {{ __('CREAR INGRESO RÁPIDO') }}
                             </a>
                         </div>
-
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class=" text-center table table-striped table-hover">
+                            <table class=" text-center table table-striped table-hover" id="ingresos-rapidos-table">
                                 <thead>
                                     <tr>
                                         <th scope="col">
                                             {{ __('ID') }}
                                         </th>
                                         <th scope="col">
-                                            {{ __('FECHA DE CREACIÓN DE LA COMPRA') }}
+                                            {{ __('CORRELATIVO') }}
+                                        </th>
+                                        <th scope="col">
+                                            {{ __('FECHA') }}
                                         </th>
 
 
-
-                                       
-
-
+                                        <th scope="col">
+                                            {{ __('PRODUCTO') }}
+                                        </th>
 
                                         <th scope="col">
                                             {{ __('PROVEEDOR') }}
                                         </th>
 
 
-                                        <th scope="col" >
+                                        <th scope="col">
                                             {{ __('COSTO TOTAL') }}
                                         </th>
 
@@ -63,10 +71,13 @@
                                                     {{ $invingresosrapido->id }}
                                                 </td>
                                                 <td scope="row">
+                                                    {{ $invingresosrapido->comprobante_correlativo }}
+                                                </td>
+                                                <td scope="row">
                                                     {{ $invingresosrapido->created_at }}
                                                 </td>
 
-                                                @if (is_array($invingresosrapido->productos) && count($invingresosrapido->productos) > 0)
+                                                @if ($invingresosrapido->productos->isNotEmpty())
                                                     <td scope="row">
                                                         {{ $invingresosrapido->productos[0]->nombre_producto }}
                                                     </td>
@@ -85,13 +96,13 @@
 
 
                                                     <div class="d-flex justify-content-between pl-4">
-                                                        <p>S/.</p> 
-                                                    
+                                                        <p>S/.</p>
+
                                                         <p>{{ number_format($invingresosrapido->total, 2) }}</p>
-                                                            
-                                                        
+
+
                                                     </div>
-                                              
+
                                                 </td>
 
 
@@ -136,12 +147,7 @@
                                                                     </svg>
                                                                 </a>
                                                             @endif
-
                                                         </div>
-
-
-
-
                                                         <div class="">
                                                             <a class="btn btn-secondary btn-sm" href="#"
                                                                 data-toggle="modal"
@@ -170,26 +176,8 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-end">
-                                <li class="page-item {{ $invingresosrapidos->onFirstPage() ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ $invingresosrapidos->previousPageUrl() }}">
-                                        {{ __('Anterior') }}
-                                    </a>
-                                </li>
-                                @for ($i = 1; $i <= $invingresosrapidos->lastPage(); $i++)
-                                    <li class="page-item {{ $invingresosrapidos->currentPage() == $i ? 'active' : '' }}">
-                                        <a class="page-link"
-                                            href="{{ $invingresosrapidos->url($i) }}">{{ $i }}</a>
-                                    </li>
-                                @endfor
-                                <li class="page-item {{ $invingresosrapidos->hasMorePages() ? '' : 'disabled' }}">
-                                    <a class="page-link" href="{{ $invingresosrapidos->nextPageUrl() }}">
-                                        {{ __('Siguiente') }}
-                                    </a>
-                                </li>
-                            </ul>
+                        <nav class="d-flex justify-content-end">
+                            {{ $invingresosrapidos->links() }}
                         </nav>
                     </div>
                 </div>
@@ -207,7 +195,7 @@
 @stop
 
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/updateadvice.js') }}"></script>
 
     <script type="text/javascript" src="{{ asset('js/jquery.printPage.js') }}"></script>
@@ -263,9 +251,6 @@
         });
     </script>
 
-
-
-    <!-- Custom script to handle document search -->
     <script>
         $(document).ready(function() {
             function isRucOrDni(value) {
@@ -356,4 +341,26 @@
         });
     </script>
 
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#searchi').on('input', function(e) {
+
+                let search_string = $(this).val();
+
+                $.ajax({
+                    url: "{{ route('invingresosrapidos.buscar') }}",
+                    method: 'GET',
+                    data: {
+                        search_string: search_string
+                    },
+                    success: function(response) {
+                        $('#ingresos-rapidos-table tbody').html(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 @endpush

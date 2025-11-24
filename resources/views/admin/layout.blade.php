@@ -125,6 +125,7 @@
     </script>
 
 
+    @stack('scripts')
 
 
 

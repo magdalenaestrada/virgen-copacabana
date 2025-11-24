@@ -14,7 +14,7 @@ class Detalleinventarioingreso extends Model
 
     public function inventarioingreso()
     {
-        return $this->belongsTo(inventarioingreso::class, 'inventarioingreso_id');
+        return $this->belongsTo(Inventarioingreso::class, 'inventarioingreso_id');
     }
 
     public function producto()

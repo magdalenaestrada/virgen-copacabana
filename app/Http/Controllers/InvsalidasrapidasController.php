@@ -11,6 +11,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Carbon\Carbon;
 use App\Exports\DetalleInventarioSalidaRapidaExport;
 use App\Models\Persona;
+use App\Models\StockReactivo;
+use App\Models\User;
 use Excel;
 use Illuminate\Support\Facades\DB;
 
@@ -19,11 +21,10 @@ class InvsalidasrapidasController extends Controller
 {
 
     public function __construct()
-    { 
+    {
         $this->middleware('permission:ver producto', ['only' => ['index', 'show']]);
         $this->middleware('permission:crear producto', ['only' => ['create', 'store']]);
         $this->middleware('permission:editar producto', ['only' => ['update', 'edit']]);
-        
     }
 
 
@@ -35,17 +36,13 @@ class InvsalidasrapidasController extends Controller
         $productos = Producto::all();
         $invsalidasrapidas = Invsalidasrapidas::orderBy('created_at', 'desc')->paginate(100);
         $today =  Carbon::today();
-        return view('invsalidasrapidas.index', compact('invsalidasrapidas','productos', 'today'));
-   
+        return view('invsalidasrapidas.index', compact('invsalidasrapidas', 'productos', 'today'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
@@ -54,60 +51,89 @@ class InvsalidasrapidasController extends Controller
     {
         DB::beginTransaction();
 
-        try{
-        // Validate the request data
-        $request->validate([
-            'products.*' => 'required|exists:productos,id',
-            'qty.*' => 'required|integer|min:1',
-            'destino' => 'required',
-            'documento_solicitante' => 'required',
-            'nombre_solicitante' => 'required',
+        try {
+            // Validate the request data
+            $request->validate([
+                'products.*' => 'required|exists:productos,id',
+                'qty.*' => 'required|numeric',
+                'destino' => 'required',
+                'documento_solicitante' => 'required',
+                'nombre_solicitante' => 'required',
 
-        ]);
-
-        $products_p = $request->input('products');
-        $index_p = 0;
-        // Create order items
-        foreach ($products_p as $productId) {
-            $producto = Producto::find($productId);
-
-            if  ($producto->stock < $request->qty[$index_p]) {
-                throw new HttpException(403, 'No tienes suficientes productos para entregar.');
-            }
-            $producto->save();
-            $index_p = $index_p + 1;
-        }
-        // Create the order
-        $invsalidarapida = new Invsalidasrapidas;
-        $invsalidarapida->destino = $request->destino;
-        $invsalidarapida->documento_solicitante = $request->documento_solicitante;
-        $invsalidarapida->nombre_solicitante = $request->nombre_solicitante;
-        $invsalidarapida->usuario_creador = auth()->user()->name;
-        $invsalidarapida->save();
-        $products = $request->input('products');
-        $index = 0;
-        // Create order items
-        foreach ($products as $productId) {
-            Invsalidasrapidasdetalles::create([
-                'inv_salidasrapidas_id' => $invsalidarapida->id,
-                'producto_id' => $productId,
-                'cantidad' => $request->qty[$index],
             ]);
-            $producto = Producto::find($productId);
-            $producto->stock -= $request->qty[$index];
-            $producto->save();
-            $index = $index + 1;
-        }
+
+            $products_p = $request->input('products');
+            $index_p = 0;
+            // Create order items
+            foreach ($products_p as $productId) {
+                $producto = Producto::find($productId);
+
+                if ($producto->stock < $request->qty[$index_p]) {
+                    throw new HttpException(403, 'No tienes suficientes productos para entregar.');
+                }
+                $producto->save();
+                $index_p = $index_p + 1;
+            }
+            // Create the order
+            $invsalidarapida = new Invsalidasrapidas;
+            $invsalidarapida->destino = $request->destino;
+            $invsalidarapida->documento_solicitante = $request->documento_solicitante;
+            $invsalidarapida->nombre_solicitante = $request->nombre_solicitante;
+            $invsalidarapida->circuito = $request->circuito;
+            $invsalidarapida->turno = $request->turno;
+            $invsalidarapida->reactivo = $request->reactivo;
+            $invsalidarapida->usuario_creador = auth()->user()->name;
+            $invsalidarapida->save();
+            $products = $request->input('products');
+            $index = 0;
+
+            foreach ($products as $productId) {
+                $cantidad = $request->qty[$index];
+
+                Invsalidasrapidasdetalles::create([
+                    'inv_salidasrapidas_id' => $invsalidarapida->id,
+                    'producto_id' => $productId,
+                    'cantidad' => $cantidad,
+                ]);
+
+                $producto = Producto::find($productId);
+                $producto->stock -= $cantidad;
+                $producto->save();
+
+                if ($request->boolean('reactivo')) {
+
+                    $hoy = Carbon::now("America/Lima");
+
+                    $reactivo = StockReactivo::where("producto_id", $productId)
+                        ->where("circuito", $request->circuito)
+                        ->first();
+
+                    if ($reactivo) {
+                        $reactivo->stock += $cantidad;
+                        $reactivo->fecha_hora = $hoy;
+                        $reactivo->usuario_id = auth()->id();
+                        $reactivo->save();
+                    } else {
+                        StockReactivo::create([
+                            "fecha_hora"   => $hoy,
+                            "usuario_id"   => auth()->id(),
+                            "circuito"     => $request->circuito,
+                            "producto_id"  => $productId,
+                            "stock"        => $cantidad,
+                        ]);
+                    }
+                }
+
+                $index++;
+            }
 
 
+            $persona = Persona::firstOrCreate(
+                ['datos_persona' => $request->nombre_solicitante, 'documento_persona' => $request->documento_solicitante]
+            );
 
-        $persona = Persona::firstOrCreate(
-            ['datos_persona' => $request->nombre_solicitante, 'documento_persona' => $request->documento_solicitante]
-        );
 
-
-        DB::commit();
-
+            DB::commit();
         } catch (ValidationException $e) {
 
             DB::rollBack();
@@ -116,20 +142,19 @@ class InvsalidasrapidasController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             // Handle other unexpected errors
-            return back()->withInput()->with('error', 'Error: '.$e->getMessage());
+            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
 
 
 
-        
-        
+
+
 
 
         // Redirect to a relevant page, e.g., order index or show
         return redirect()->route('invsalidasrapidas.index')->with('crear-salida-rapida', 'Salida rápida creada con éxito.');
-
     }
-    
+
 
 
     /**
@@ -170,9 +195,8 @@ class InvsalidasrapidasController extends Controller
 
         $invsalidarapida = Invsalidasrapidas::findOrFail($id);
 
-        
+
         return view('invsalidasrapidas.printdoc', compact('invsalidarapida'));
-                
     }
 
 
@@ -181,25 +205,20 @@ class InvsalidasrapidasController extends Controller
     {
         $inventariosalidarapida = Invsalidasrapidas::findOrFail($id);
         $inventariosalidarapida->estado = 'ANULADO';
-        foreach( $inventariosalidarapida->productos as $producto )
-        {
-            
-            $producto->stock += $producto->pivot->cantidad;
-            $producto->save(); 
-            
-            
+        foreach ($inventariosalidarapida->productos as $producto) {
 
+            $producto->stock += $producto->pivot->cantidad;
+            $producto->save();
         }
 
         $inventariosalidarapida->save();
 
         return redirect()->route('invsalidasrapidas.index')->with('anular-salida-rapida', 'Salida rápida anulada con éxito.');
-
     }
 
 
 
-  //search salidarapida
+    //search salidarapida
     public function searchSalidaRapida(Request $request)
     {
         $searchString = $request->search_string;
@@ -207,18 +226,19 @@ class InvsalidasrapidasController extends Controller
         $today =  Carbon::today();
         $invsalidasrapidas = Invsalidasrapidas::where('nombre_solicitante', 'like', '%' . $request->search_string . '%')
             ->orWhere('destino', 'like', '%' . $request->search_string . '%')
-            ->orWhereHas('productos', function($query) use ($searchString) {
+            ->orWhereHas('productos', function ($query) use ($searchString) {
                 $query->where('nombre_producto', 'like', '%' . $searchString . '%');
             })
             ->orderBy('id', 'desc')
             ->paginate(100);
 
-        return view('invsalidasrapidas.search-results', compact('invsalidasrapidas','today', 'productos'));
+        return view('invsalidasrapidas.search-results', compact('invsalidasrapidas', 'today', 'productos'));
     }
 
 
-     //excel for detalles of this
-    public function export_excel(Request $request){
+    //excel for detalles of this
+    public function export_excel(Request $request)
+    {
 
         $destino = $request->input('destino');
         $nombre_solicitante = $request->input('nombre_solicitante');
@@ -227,10 +247,5 @@ class InvsalidasrapidasController extends Controller
         $end_date = $request->input('end_date');
 
         return Excel::download(new DetalleInventarioSalidaRapidaExport($destino, $nombre_solicitante, $producto_id, $start_date, $end_date), 'salidasrapidas.xlsx');
-    
     }
-
-
-
-
 }

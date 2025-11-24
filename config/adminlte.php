@@ -406,7 +406,6 @@ return [
                     'can' => 'ver producto',
                 ],
 
-
                 [
                     'text' => 'Prestamos',
                     'submenu' => [
@@ -453,6 +452,8 @@ return [
                 ],
             ],
         ],
+        
+
         ['header' => 'COMEDOR', 'can' => 'ver producto'],
 
         [

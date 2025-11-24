@@ -12,8 +12,7 @@
         }
 
         .modern-card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: rgb(0, 0, 0);
             padding: 1.5rem;
             border-radius: 12px 12px 0 0;
         }
@@ -102,24 +101,6 @@
             justify-content: flex-end;
         }
 
-        .btn-add {
-            background: linear-gradient(135deg, #475569 0%, #334155 100%);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: transform 0.2s;
-        }
-
-        .btn-add:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(71, 85, 105, 0.4);
-        }
-
         .btn-delete {
             background: #dc2626;
             color: white;
@@ -136,26 +117,6 @@
         .btn-delete:hover {
             background: #b91c1c;
             transform: scale(1.1);
-        }
-
-        .totales-card {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
-            margin-top: 1.5rem;
-        }
-
-        .total-label {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .total-amount {
-            font-size: 2rem;
-            font-weight: 700;
         }
 
         .btn-success-modern {
@@ -184,27 +145,21 @@
     </style>
 
     <div class="container-fluid mt-4">
-        {{-- HEADER --}}
         <div class="modern-card">
-            <div class="modern-card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0 fw-bold">Editar Orden de Servicio</h4>
-                    <span class="badge-codigo">{{ $orden->codigo }}</span>
-                </div>
+            <div class="modern-card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0 fw-bold">Editar Orden de Servicio</h4>
+                <span class="badge-codigo">{{ $orden->codigo }}</span>
             </div>
         </div>
+
         <form id="formEditarOrden" method="POST" action="{{ route('orden-servicio.update', $orden->id) }}">
             @csrf
             @method('PUT')
-            <?php
-            use Carbon\Carbon;
-            $hoy = Carbon::now('America/Lima');
-            ?>
+            <?php use Carbon\Carbon;
+            $hoy = Carbon::now('America/Lima'); ?>
 
-            {{-- DATOS DEL PROVEEDOR --}}
             <div class="modern-card">
                 <div class="modern-card-body">
-                    <h5 class="section-title">📋 Datos del Proveedor</h5>
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label class="form-label">RUC</label>
@@ -227,25 +182,19 @@
                                 value="{{ $orden->proveedor->direccion ?? '' }}" class="form-control modern-input">
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {{-- DATOS DE LA ORDEN --}}
-            <div class="modern-card">
-                <div class="modern-card-body">
-                    <h5 class="section-title">📅 Datos de la Orden</h5>
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Fecha Inicio</label>
                             <input type="date" name="fecha_inicio"
                                 value="{{ optional($orden->fecha_inicio)->format('Y-m-d') }}"
-                                class="form-control modern-input" min="{{ now('America/Lima')->format('Y-m-d') }}" required>
+                                class="form-control modern-input" required>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Fecha Fin</label>
                             <input type="date" name="fecha_fin"
                                 value="{{ optional($orden->fecha_fin)->format('Y-m-d') }}" class="form-control modern-input"
-                                min="{{ now('America/Lima')->format('Y-m-d') }}" required>
+                                required>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Costo Estimado</label>
@@ -264,54 +213,39 @@
                             <textarea name="descripcion" class="form-control modern-input" rows="3">{{ $orden->descripcion }}</textarea>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            {{-- DETALLES DEL SERVICIO --}}
-            <div class="modern-card">
-                <div class="modern-card-body">
-                    <h5 class="section-title">🛠️ Detalles del Servicio</h5>
 
                     <div class="table-responsive">
                         <table class="modern-table" id="tablaDetalles">
                             <thead>
                                 <tr>
-                                    <th style="text-align: left;">Descripción</th>
-                                    <th style="text-align: center; width: 120px;">Cantidad</th>
-                                    <th style="text-align: right; width: 150px;">Precio Unitario</th>
-                                    <th style="text-align: right; width: 150px;">Subtotal</th>
-                                    <th style="text-align: center; width: 80px;">Acciones</th>
+                                    <th>Descripción</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio Unitario</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th class="text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($orden->detalles as $detalle)
                                     <tr>
+                                        <td><input type="text" class="form-control modern-input descripcion"
+                                                value="{{ $detalle->descripcion }}"></td>
+                                        <td><input type="number" class="form-control modern-input cantidad text-center"
+                                                min="0" step="1" value="{{ $detalle->cantidad }}"></td>
+                                        <td><input type="number" class="form-control modern-input precio_unitario text-end"
+                                                step="0.01" min="0" value="{{ $detalle->precio_unitario }}"></td>
                                         <td>
-                                            <input type="text" class="form-control modern-input descripcion"
-                                                value="{{ $detalle->descripcion }}" placeholder="Descripción del servicio">
-                                        </td>
-                                        <td>
-                                            <input type="number" class="form-control modern-input cantidad text-center"
-                                                min="0" step="1" value="{{ $detalle->cantidad }}">
-                                        </td>
-                                        <td>
-                                            <input type="number" class="form-control modern-input precio_unitario text-end"
-                                                step="0.01" min="0" value="{{ $detalle->precio_unitario }}">
-                                        </td>
-                                        <td>
-                                            <div class="subtotal-display">
-                                                S/ <span
+                                            <div class="subtotal-display">S/ <span
                                                     class="subtotal-valor">{{ number_format($detalle->cantidad * $detalle->precio_unitario, 2) }}</span>
                                             </div>
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn-delete eliminarFila" title="Eliminar">
-                                                <svg width="18" height="18" fill="currentColor"
-                                                    viewBox="0 0 16 16">
+                                                <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                                                     <path
                                                         d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
                                                     <path fill-rule="evenodd"
-                                                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1z" />
                                                 </svg>
                                             </button>
                                         </td>
@@ -320,6 +254,7 @@
                             </tbody>
                         </table>
                     </div>
+
                     <button type="button" id="agregarFila" class="btn btn-success mt-3 d-flex align-items-center gap-2">
                         <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                             <path
@@ -327,118 +262,111 @@
                         </svg>
                         Agregar Detalle
                     </button>
-                </div>
-            </div>
-            {{-- TOTALES --}}
-            <div class="totales-card">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <div class="d-flex align-items-center gap-3">
-                            <svg width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
-                                <path
-                                    d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zM3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.58 26.58 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.933.933 0 0 1-.765.935c-.845.147-2.34.346-4.235.346-1.895 0-3.39-.2-4.235-.346A.933.933 0 0 1 3 9.219V8.062zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a24.767 24.767 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25.286 25.286 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135z" />
-                                <path
-                                    d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2V1.866zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5z" />
-                            </svg>
-                            <div>
-                                <p class="total-label mb-1">Costo Total del Servicio</p>
-                                <p class="total-amount mb-0" id="totalDisplay">S/ 0.00</p>
-                            </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between">
+                            <strong>Subtotal:</strong>
+                            <span id="subtotalGeneral">0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <strong>IGV (18%):</strong>
+                            <span id="igvGeneral">0.00</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fs-5">
+                            <strong>Total General:</strong>
+                            <span id="totalGeneral">0.00</span>
                         </div>
                     </div>
-                    <div class="col-md-4 text-end">
-                        <p class="total-label mb-2">Items: <span id="itemCount">{{ count($orden->detalles) }}</span></p>
-                        <button type="submit" class="btn-success-modern">
-                            💾 Guardar Cambios
-                        </button>
-                        <a href="{{ route('orden-servicio.index') }}" class="btn btn-light ms-2 px-4 py-2 rounded-3">
-                            Cancelar
-                        </a>
-                    </div>
+                </div>
+
+                <input type="hidden" name="detalles" id="detalles">
+                <div class="text-end mt-4 mb-4">
+                    <p class="mb-2">Items: <span id="itemCount">{{ count($orden->detalles) }}</span></p>
+                    <button type="submit" class="btn-success-modern">Guardar Cambios</button>
+                    <a href="{{ route('orden-servicio.index') }}" class="btn btn-light ms-2 px-4 py-2 rounded-3">
+                        Cancelar
+                    </a>
                 </div>
             </div>
-
-            <input type="hidden" name="detalles" id="detalles">
-        </form>
+    </div>
+    </form>
     </div>
 @endsection
+
 @section('js')
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // 🔹 Recalcular subtotal visualmente
-            function recalcularFila(fila) {
-                const cantidad = parseFloat(fila.querySelector('.cantidad').value) || 0;
-                const precio = parseFloat(fila.querySelector('.precio_unitario').value) || 0;
-
-                const subtotal = cantidad * precio;
-                const total_igv = subtotal * 1.18; // incluye IGV
-
-                const subtotalElemento = fila.querySelector('.subtotal-valor');
-                if (subtotalElemento) {
-                    subtotalElemento.textContent = subtotal.toFixed(2);
-                }
-
-                // ✅ Devolvemos ambos valores como objeto
-                return {
-                    subtotal,
-                    total_igv
-                };
-            }
-
+        document.addEventListener('DOMContentLoaded', function() {
             function recalcularTotales() {
-                let totalSubtotal = 0;
-                let totalConIgv = 0;
-
+                let subtotal = 0;
                 document.querySelectorAll('#tablaDetalles tbody tr').forEach(fila => {
-                    const {
-                        subtotal,
-                        total_igv
-                    } = recalcularFila(fila);
-                    totalSubtotal += subtotal;
-                    totalConIgv += total_igv;
+                    const cantidad = parseFloat(fila.querySelector('.cantidad')?.value) || 0;
+                    const precio = parseFloat(fila.querySelector('.precio_unitario')?.value) || 0;
+                    const sub = cantidad * precio;
+                    fila.querySelector('.subtotal-valor').textContent = sub.toFixed(2);
+                    subtotal += sub;
                 });
-
-                document.querySelector('input[name="costo_estimado"]').value = totalSubtotal.toFixed(2);
-                document.querySelector('input[name="costo_final"]').value = totalConIgv.toFixed(2);
-
-                const totalDisplay = document.getElementById('totalDisplay');
-                if (totalDisplay) {
-                    totalDisplay.textContent = "S/ " + totalConIgv.toFixed(2);
-                }
+                const igv = subtotal * 0.18;
+                const total = subtotal + igv;
+                document.getElementById('subtotalGeneral').textContent = subtotal.toFixed(2);
+                document.getElementById('igvGeneral').textContent = igv.toFixed(2);
+                document.getElementById('totalGeneral').textContent = total.toFixed(2);
+                // 🔹 Actualiza también los inputs visibles
+                document.getElementById('costoEstimadoInput').value = subtotal.toFixed(2);
+                document.getElementById('costoFinalInput').value = total.toFixed(2);
             }
 
-            // 🔹 Agregar nueva fila visual
-            document.getElementById('agregarFila').addEventListener('click', function() {
-                const nuevaFila = document.createElement('tr');
-                nuevaFila.innerHTML = `
-            <td><input type="text" class="form-control modern-input descripcion" placeholder="Descripción del servicio"></td>
-            <td><input type="number" class="form-control modern-input cantidad text-center" value="1" min="0"></td>
-            <td><input type="number" class="form-control modern-input precio_unitario text-end" step="0.01" value="0" min="0"></td>
-            <td>
-                <div class="subtotal-display">S/ <span class="subtotal-valor">0.00</span></div>
-            </td>
-            <td class="text-center">
-                <button type="button" class="btn-delete eliminarFila" title="Eliminar">
-                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM2.5 3V2h11v1h-11z" />
-                    </svg>
-                </button>
-            </td>`;
-                document.querySelector('#tablaDetalles tbody').appendChild(nuevaFila);
-                recalcularTotales();
-            });
-
-            // 🔹 Eliminar fila
             document.addEventListener('click', function(e) {
                 if (e.target.closest('.eliminarFila')) {
                     e.target.closest('tr').remove();
                     recalcularTotales();
+                    actualizarContador();
                 }
             });
 
-            // 🔹 Al enviar: serializar detalles
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('cantidad') || e.target.classList.contains(
+                        'precio_unitario')) {
+                    recalcularTotales();
+                }
+            });
+
+            document.getElementById('agregarFila').addEventListener('click', function() {
+                const tbody = document.querySelector('#tablaDetalles tbody');
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+            <td><input type="text" class="form-control modern-input descripcion"></td>
+            <td><input type="number" class="form-control modern-input cantidad text-center" min="0" step="1" value="0"></td>
+            <td><input type="number" class="form-control modern-input precio_unitario text-end" step="0.01" min="0" value="0.00"></td>
+            <td><div class="subtotal-display">S/ <span class="subtotal-valor">0.00</span></div></td>
+            <td class="text-center">
+                <button type="button" class="btn-delete eliminarFila" title="Eliminar">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1z"/>
+                    </svg>
+                </button>
+            </td>`;
+                tbody.appendChild(fila);
+                actualizarContador();
+            });
+
+            function actualizarContador() {
+                document.getElementById('itemCount').textContent =
+                    document.querySelectorAll('#tablaDetalles tbody tr').length;
+            }
+
             document.getElementById('formEditarOrden').addEventListener('submit', function() {
+                let subtotal = 0;
+                document.querySelectorAll('#tablaDetalles tbody tr').forEach(fila => {
+                    const cantidad = parseFloat(fila.querySelector('.cantidad')?.value) || 0;
+                    const precio = parseFloat(fila.querySelector('.precio_unitario')?.value) || 0;
+                    subtotal += cantidad * precio;
+                });
+                const igv = subtotal * 0.18;
+                const total = subtotal + igv;
+                document.getElementById('costoEstimadoInput').value = subtotal.toFixed(2);
+                document.getElementById('costoFinalInput').value = total.toFixed(2);
+
                 const detalles = [];
                 document.querySelectorAll('#tablaDetalles tbody tr').forEach(fila => {
                     const descripcion = fila.querySelector('.descripcion').value.trim();
@@ -446,7 +374,6 @@
                     const precio = fila.querySelector('.precio_unitario').value || 0;
                     const subtotal = parseFloat(fila.querySelector('.subtotal-valor')
                         .textContent) || 0;
-
                     if (descripcion !== '') {
                         detalles.push({
                             descripcion,
@@ -456,13 +383,14 @@
                         });
                     }
                 });
+
                 document.getElementById('detalles').value = JSON.stringify({
                     detalles
                 });
             });
 
-            // Inicializa al cargar
-            recalcularTotales();
+            // Espera que todo el DOM se cargue y calcula totales iniciales
+            setTimeout(recalcularTotales, 100);
         });
     </script>
 @endsection

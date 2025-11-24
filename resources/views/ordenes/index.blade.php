@@ -25,7 +25,7 @@
                     <div class="row align-items-center justify-content-between p-3">
                         <div class="col-md-6 input-container">
                             <input type="text" name="search" id="search" class="input-search form-control"
-                                placeholder="Buscar aquí...">
+                                placeholder="Buscar aqu铆...">
                         </div>
                         <a href="{{ route('orden-servicio.export-excel') }}" class="button_export-excel">
                             <span class="button__text">Descargar Excel</span>
@@ -43,7 +43,7 @@
                                     <th>{{ __('DESCRIPCION') }}</th>
                                     <th>{{ __('MONTO TOTAL') }}</th>
                                     <th>{{ __('ESTADO') }}</th>
-                                    <th>{{ __('ACCIÓN') }}</th>
+                                    <th>{{ __('ACCI脫N') }}</th>
                                 </tr>
                             </thead>
 
@@ -52,8 +52,8 @@
                                     <tr>
                                         <td>{{ $orden->codigo }}</td>
                                         <td>{{ $orden->proveedor->razon_social ?? '-' }}</td>
-                                        <td>{{ $orden->fecha_inicio->format('d/m/Y') }}</td>
-                                        <td>{{ $orden->fecha_fin->format('d/m/Y') }}</td>
+                                        <td>{{ optional($orden->fecha_inicio)->format('Y-m-d') ?? '-' }}</td>
+                                        <td>{{ optional($orden->fecha_fin)->format('Y-m-d') ?? '-' }}</td>
                                         <td>{{ $orden->descripcion ?? '-' }}</td>
                                         <td>
                                             <div class="d-flex justify-content-between">
@@ -156,14 +156,14 @@
                                 @empty
                                     <tr>
                                         <td colspan="8" class="text-center text-muted">
-                                            {{ __('No hay órdenes registradas') }}
+                                            {{ __('No hay 贸rdenes registradas') }}
                                         </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
 
-                        <!-- Paginación -->
+                        <!-- Paginaci贸n -->
                         <nav>
                             <ul class="pagination justify-content-end">
                                 {{ $ordenes->links() }}
@@ -175,7 +175,7 @@
         </div>
     </div>
 
-    {{-- 🔹 AQUI VAN LOS MODALES (fuera del foreach) --}}
+    {{-- 馃敼 AQUI VAN LOS MODALES (fuera del foreach) --}}
     @foreach ($ordenes as $orden)
         @include('ordenes.modal.show', ['ordenServicio' => $orden])
     @endforeach
@@ -194,17 +194,17 @@
     </script>
 
     <script>
-        // Confirmación de anulación
+        // Confirmaci贸n de anulaci贸n
         $(document).on('click', '.anular-orden-servicio', function(e) {
             e.preventDefault();
             const id = $(this).data('id');
 
             Swal.fire({
-                title: '¿Anular esta orden de servicio?',
-                text: 'Esta acción no se puede deshacer.',
+                title: '驴Anular esta orden de servicio?',
+                text: 'Esta acci贸n no se puede deshacer.',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Sí, anular',
+                confirmButtonText: 'S铆, anular',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -215,7 +215,7 @@
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         success: function() {
-                            Swal.fire('Éxito', 'La orden ha sido anulada.', 'success')
+                            Swal.fire('脡xito', 'La orden ha sido anulada.', 'success')
                                 .then(() => location.reload());
                         },
                         error: function() {
@@ -246,7 +246,7 @@
 
         // Notificaciones
         @if (session('success'))
-            Swal.fire('Éxito', '{{ session('success') }}', 'success');
+            Swal.fire('脡xito', '{{ session('success') }}', 'success');
         @elseif (session('error'))
             Swal.fire('Error', '{{ session('error') }}', 'error');
         @endif

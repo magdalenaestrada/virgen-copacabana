@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lotes', function (Blueprint $table) {
+        Schema::create('consumo_devolucion_reactivo', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('usuario');
+            $table->foreignId("proceso_id")->constrained("procesos");
+            $table->char("tipo");
+            $table->decimal("cantidad");
+            $table->foreignId("reactivo_id")->constrained("productos");
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lotes');
+        Schema::dropIfExists('consumo_devolucion_reactivo');
     }
 };

@@ -55,7 +55,6 @@ class InventariosalidaController extends Controller
             'qty.*' => 'required|integer|min:1',
             'descripcion' => 'nullable|string',
 
-            //FOR DOC TABLE
             'documento_solicitante' => 'required',
             'nombre_solicitante' => 'required',
             'area_solicitante' => 'required',
@@ -63,7 +62,6 @@ class InventariosalidaController extends Controller
             'codigo' => 'required|unique:productos,nombre_producto',
         ]);
 
-        // Create the order
         $inventariosalida = Inventariosalida::create([
             'descripcion' => $request->descripcion,
         ]);

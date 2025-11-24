@@ -14,6 +14,25 @@ tbody tr {
 
 
 
+.bg-liquidado {
+  background-color: #d1e7dd !important;
+  color: #0f5132 !important;
+}
+
+.bg-retirado {
+  background-color: #f8d7da !important;
+  color: #842029 !important;
+}
+
+.bg-cancha {
+  background-color: #cfe2ff !important;
+  color: #084298 !important;
+}
+
+.bg-procesado {
+  background-color: #fff3cd !important;
+  color: #664d03 !important;
+}
 
 
 
@@ -337,22 +356,24 @@ tbody tr {
   }
 }
 
-
 /*PRINTER*/
 
 .printer {
   --border: #00104b;
   --background: #fff;
   cursor: pointer;
-  width: 28px; /* Width */
-  height: 16px; /* Height */
+  width: 28px;
+  /* Width */
+  height: 16px;
+  /* Height */
   position: relative;
 }
 
 .printer:before, .printer:after {
   content: "";
   position: absolute;
-  box-shadow: inset 0 0 0 1.5px var(--border); /* Thinner border */
+  box-shadow: inset 0 0 0 1.5px var(--border);
+  /* Thinner border */
   background: var(--background);
 }
 
@@ -360,25 +381,33 @@ tbody tr {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 12px; /* Height */
+  height: 12px;
+  /* Height */
   border-radius: 3px;
   z-index: 2;
 }
 
 .printer:after {
-  width: 22px; /* Width */
-  height: 4px; /* Reduced height */
+  width: 22px;
+  /* Width */
+  height: 4px;
+  /* Reduced height */
   top: 0;
-  left: 3px; /* Adjusted left */
+  left: 3px;
+  /* Adjusted left */
   border-radius: 3px 3px 0 0;
 }
 
 .printer .dot {
-  width: 20px; /* Width */
-  height: 1.5px; /* Thinner height */
+  width: 20px;
+  /* Width */
+  height: 1.5px;
+  /* Thinner height */
   border-radius: 1px;
-  left: 4px; /* Adjusted left */
-  bottom: 4px; /* Adjusted bottom */
+  left: 4px;
+  /* Adjusted left */
+  bottom: 4px;
+  /* Adjusted bottom */
   z-index: 4;
   position: absolute;
   background: var(--border);
@@ -389,31 +418,42 @@ tbody tr {
   position: absolute;
   background: var(--border);
   border-radius: 1px;
-  height: 1.3px; /* Thinner height */
+  height: 1.3px;
+  /* Thinner height */
 }
 
 .printer .dot:before {
-  width: 2px; /* Adjusted width */
+  width: 2px;
+  /* Adjusted width */
   right: 0;
-  top: -4px; /* Adjusted top */
+  top: -4px;
+  /* Adjusted top */
 }
 
 .printer .dot:after {
-  width: 3px; /* Adjusted width */
-  right: 3px; /* Adjusted right */
-  top: -4px; /* Adjusted top */
+  width: 3px;
+  /* Adjusted width */
+  right: 3px;
+  /* Adjusted right */
+  top: -4px;
+  /* Adjusted top */
 }
 
 .printer .paper {
   position: absolute;
   z-index: 1;
-  width: 16px; /* Width */
-  height: 18px; /* Height */
+  width: 16px;
+  /* Width */
+  height: 18px;
+  /* Height */
   border-radius: 2px;
-  box-shadow: inset 0 0 0 1.5px var(--border); /* Thinner border */
+  box-shadow: inset 0 0 0 1.5px var(--border);
+  /* Thinner border */
   background: var(--background);
-  left: 6px; /* Adjusted left */
-  bottom: 8px; /* Adjusted bottom */
+  left: 6px;
+  /* Adjusted left */
+  bottom: 8px;
+  /* Adjusted bottom */
   display: flex;
   justify-content: center;
   transform: perspective(30px) translateY(0) rotateX(4deg) translateZ(0);
@@ -423,16 +463,22 @@ tbody tr {
 
 .printer .paper .svg {
   display: block;
-  width: 7px; /* Width */
-  height: 7px; /* Height */
-  margin-top: 4px; /* Adjusted top */
+  width: 7px;
+  /* Width */
+  height: 7px;
+  /* Height */
+  margin-top: 4px;
+  /* Adjusted top */
 }
 
 .printer .output {
-  width: 28px; /* Width */
-  height: 20px; /* Height */
+  width: 28px;
+  /* Width */
+  height: 20px;
+  /* Height */
   pointer-events: none;
-  top: 12px; /* Adjusted top */
+  top: 12px;
+  /* Adjusted top */
   left: 0;
   z-index: 3;
   overflow: hidden;
@@ -442,12 +488,16 @@ tbody tr {
 .printer .output .paper-out {
   position: absolute;
   z-index: 1;
-  width: 16px; /* Width */
-  height: 18px; /* Height */
+  width: 16px;
+  /* Width */
+  height: 18px;
+  /* Height */
   border-radius: 2px;
-  box-shadow: inset 0 0 0 1.5px var(--border); /* Thinner border */
+  box-shadow: inset 0 0 0 1.5px var(--border);
+  /* Thinner border */
   background: var(--background);
-  left: 6px; /* Adjusted left */
+  left: 6px;
+  /* Adjusted left */
   bottom: 0;
   transform: perspective(30px) rotateX(30deg) translateY(-10px) translateZ(4px);
   animation: paper-out 1.2s ease infinite;
@@ -457,10 +507,14 @@ tbody tr {
 .printer .output .paper-out:before {
   content: "";
   position: absolute;
-  left: 3px; /* Adjusted left */
-  top: 3px; /* Adjusted top */
-  right: 3px; /* Adjusted right */
-  height: 1.5px; /* Thinner height */
+  left: 3px;
+  /* Adjusted left */
+  top: 3px;
+  /* Adjusted top */
+  right: 3px;
+  /* Adjusted right */
+  height: 1.5px;
+  /* Thinner height */
   border-radius: 1px;
   opacity: 0.5;
   background: var(--border);

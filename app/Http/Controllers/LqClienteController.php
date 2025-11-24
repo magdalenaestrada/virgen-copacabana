@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LqCliente;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -46,6 +47,7 @@ class LqClienteController extends Controller
             ]);
 
             $empleado = LqCliente::create([
+                "codigo" => $this->GenerarCodigo(),
                 'documento' => $request->documento,
                 'nombre' => $request->nombre,
                 'creador_id' => auth()->id(),
@@ -115,5 +117,18 @@ class LqClienteController extends Controller
         } else {
             return response()->json(['success' => false, 'message' => 'Lote no encontrado']);
         }
+    }
+
+    public function GenerarCodigo()
+    {
+        $ultimo_cliente = LqCliente::orderBy('id', 'desc')->first();
+        if ($ultimo_cliente) {
+            $nuevo_codigo = str_pad(intval($ultimo_cliente->id) + 1, 4, '0', STR_PAD_LEFT);
+            $anio = Carbon::now("America/Lima")->format("y");
+            $codigo = 'AG' . $anio . '-' . $nuevo_codigo;
+        } else {
+            $codigo = 'AG-0001';
+        }
+        return $codigo;
     }
 }

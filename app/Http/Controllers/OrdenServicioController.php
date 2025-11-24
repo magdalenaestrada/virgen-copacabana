@@ -99,10 +99,6 @@ class OrdenServicioController extends Controller
                 return $orden_servicio;
             });
 
-            activity()
-                ->performedOn($orden_servicio)
-                ->log('Se guardó un orden_servicio');
-
             return redirect()
                 ->route('orden-servicio.index')
                 ->with('success', 'La orden de servicio se creó correctamente.');
@@ -172,10 +168,8 @@ class OrdenServicioController extends Controller
         try {
             $orden_servicio = DB::transaction(function () use ($request, $id, $hoy) {
 
-                // 1️⃣ Buscar la orden
                 $orden = OrdenServicio::findOrFail($id);
 
-                // 2️⃣ Actualizar proveedor (por si cambia)
                 $proveedor = Proveedor::updateOrCreate(
                     ['ruc' => $request->documento_proveedor],
                     [
@@ -185,7 +179,6 @@ class OrdenServicioController extends Controller
                     ]
                 );
 
-                // 3️⃣ Actualizar datos principales de la orden
                 $orden->update([
                     "proveedor_id" => $proveedor->id,
                     "fecha_inicio" => $request->fecha_inicio,
@@ -196,7 +189,6 @@ class OrdenServicioController extends Controller
                     "updated_at" => $hoy,
                 ]);
 
-                // 4️⃣ Actualizar detalles
                 $detalles = json_decode($request->detalles, true);
 
                 // Eliminar los detalles antiguos
@@ -216,10 +208,6 @@ class OrdenServicioController extends Controller
                 return $orden;
             });
 
-            // 5️⃣ Registrar en logs (activity)
-            activity()
-                ->performedOn($orden_servicio)
-                ->log('Se actualizó una orden de servicio');
 
             return redirect()
                 ->route('orden-servicio.index')
@@ -314,14 +302,7 @@ class OrdenServicioController extends Controller
         $orden->update([
             'estado_servicio' => 'C',
         ]);
-        activity()
-            ->causedBy(Auth::user())
-            ->performedOn($comprobante)
-            ->withProperties([
-                'orden_id' => $orden->id,
-                'total' => $orden->costo_final,
-            ])
-            ->log('Creó un comprobante para la orden de servicio');
+       
 
         return redirect()
             ->route('orden-servicio.index')

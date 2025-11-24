@@ -136,7 +136,7 @@ return [
     'string'               => 'El campo :attribute debe ser una cadena de caracteres.',
     'timezone'             => 'El campo :attribute debe ser una zona horaria válida.',
     'ulid'                 => 'El campo :attribute debe ser un ULID válido.',
-    'unique'               => 'El campo :attribute ya ha sido registrado.',
+    'unique'               => 'El :attribute ya ha sido registrado.',
     'uploaded'             => 'Subir :attribute ha fallado.',
     'uppercase'            => 'El campo :attribute debe estar en mayúscula.',
     'url'                  => 'El campo :attribute debe ser una URL válida.',

@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('inv_salidasrapidas', function (Blueprint $table) {
+            $table->char("circuito", 1)->nullable();
+            $table->char("turno", 1)->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('inv_salidasrapidas', function (Blueprint $table) {
+            //
+        });
+    }
+};

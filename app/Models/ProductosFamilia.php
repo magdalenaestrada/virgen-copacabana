@@ -19,5 +19,9 @@ class ProductosFamilia extends Model
         return $this->belongsTo(ProductosFamilia::class, 'parent_id');
     }
 
+    public function productos()
+    {
+        return $this->hasMany(Producto::class, 'productos_familia_id');
+    }
 
 }

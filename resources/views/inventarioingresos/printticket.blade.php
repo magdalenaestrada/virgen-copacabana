@@ -146,12 +146,13 @@
     @endphp
     <table class="totals">
       <tr><td>DESCUENTO</td><td class="text-right">{{ number_format($inventarioingreso->descuento, 2) }} {{ $mon }}</td></tr>
+      <tr><td>ADICIONAL</td><td class="text-right">{{ number_format($inventarioingreso->adicional, 2) }} {{ $mon }}</td></tr>
       <tr><td>SUBTOTAL</td><td class="text-right">{{ number_format($inventarioingreso->subtotal, 2) }} {{ $mon }}</td></tr>
       <tr><td>IGV (18%)</td><td class="text-right">{{ number_format($igv, 2) }} {{ $mon }}</td></tr>
       <tr class="grand"><td>PRECIO TOTAL</td><td class="text-right">{{ number_format($inventarioingreso->total, 2) }} {{ $mon }}</td></tr>
     </table>
   </div>
-
+  
   {{-- <script>window.print()</script> --}}
 </body>
 </html>

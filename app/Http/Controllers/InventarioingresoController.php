@@ -10,9 +10,12 @@ use App\Models\Detalleinventarioingreso;
 use App\Models\Logdetallesinvingreso;
 use App\Models\Inventariopagoacuenta;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Excel;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\DetalleInventarioIngresoExport;
+use App\Models\TipoMoneda;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 
 class InventarioingresoController extends Controller
@@ -29,13 +32,6 @@ class InventarioingresoController extends Controller
     }
 
 
-    /**
-     * Actualiza únicamente 'cotizacion' (sin tocar otros campos).
-     */
-  
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $productos = Producto::all();
@@ -43,13 +39,11 @@ class InventarioingresoController extends Controller
         return view('inventarioingresos.index', compact('inventarioingresos', 'productos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $productos = Producto::all();
-        return view('inventarioingresos.create', compact('productos'));
+        $tipos_monedas = TipoMoneda::all();
+        return view('inventarioingresos.create', compact('productos', 'tipos_monedas'));
     }
 
     /**
@@ -70,14 +64,15 @@ class InventarioingresoController extends Controller
                 'proveedor' => 'required',
                 'documento_proveedor' => 'required',
                 'tipomoneda' => 'required',
-                'cotizacion'=> 'nullable|string|max:255'
+                'cotizacion' => 'nullable|string|max:255'
             ]);
 
-            // Create the order
             $inventarioingreso = Inventarioingreso::create([
                 'descripcion' => $request->observacion,
                 'total' => $request->product_grand_total,
                 'subtotal' => $request->product_sub_total,
+                'adicional' => $request->product_adicional,
+                'descuento' => $request->product_descuento,
                 'cotizacion'   => $request->cotizacion ?? $request->codigo_cotizacion,
                 'tipomoneda' => $request->tipomoneda,
             ]);
@@ -88,6 +83,8 @@ class InventarioingresoController extends Controller
             $inventarioingreso->save();
 
             $products = $request->input('products');
+            $monedasDetalle = $request->tipomoneda_producto;
+
             $index = 0;
             // Create order items
             foreach ($products as $productId) {
@@ -100,7 +97,21 @@ class InventarioingresoController extends Controller
                     'estado' => 'PENDIENTE',
 
                 ]);
-                $index = $index + 1;
+
+                $producto = Producto::find($productId);
+
+                if ($producto && $producto->tipo_moneda_id === null) {
+
+                    $monedaId = $monedasDetalle[$index] ?? null;
+
+                    if ($monedaId) {
+                        $producto->tipo_moneda_id = $monedaId;
+                        $producto->save();
+                    }
+                }
+
+
+                $index++;
             }
 
 
@@ -145,43 +156,90 @@ class InventarioingresoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
- public function edit(string $id)
-{
-    $inventarioingreso = Inventarioingreso::with(['proveedor','productos'])->findOrFail($id);
-    return view('inventarioingresos.edit', compact('inventarioingreso'));
-}
-
-public function update(Request $request, string $id)
-{
-    // Solo actualizar 'cotizacion'
-    $request->merge([
-        'cotizacion' => trim((string) $request->cotizacion),
-    ]);
-
-    $validated = $request->validate([
-        'cotizacion' => ['required','string','max:120'],
-    ], [
-        'cotizacion.required' => 'La cotización es obligatoria.',
-        'cotizacion.max'      => 'La cotización no debe exceder 120 caracteres.',
-    ]);
-
-    $inventarioingreso = Inventarioingreso::findOrFail($id);
-
-    if ($inventarioingreso->estado === 'ANULADO') {
-        throw new \Symfony\Component\HttpKernel\Exception\HttpException(
-            403, 'No se puede editar la cotización de una orden ANULADA.'
-        );
+    public function edit(string $id)
+    {
+        $inventarioingreso = Inventarioingreso::with(['proveedor', 'productos'])->findOrFail($id);
+        $tipos_monedas = TipoMoneda::all();
+        return view('inventarioingresos.edit', compact('inventarioingreso', 'tipos_monedas'));
     }
 
-    DB::transaction(function () use ($inventarioingreso, $validated) {
-        $inventarioingreso->cotizacion = $validated['cotizacion'];
-        $inventarioingreso->save();
-    });
+    public function update(Request $request, string $id)
+    {
+        $inventarioingreso = Inventarioingreso::with('productos')->findOrFail($id);
 
-    return redirect()
-        ->route('inventarioingresos.index')
-        ->with('actualizar-cotizacion', 'Cotización actualizada con éxito.');
-}
+        if ($inventarioingreso->estado === 'ANULADO') {
+            abort(403, 'No se puede editar una orden ANULADA.');
+        }
+
+        $validated = $request->validate([
+            'cotizacion' => ['required', 'string', 'max:120'],
+            'fecha_creacion' => ['required', 'date'],
+        ]);
+
+        DB::transaction(function () use ($inventarioingreso, $validated, $request) {
+
+            $inventarioingreso->cotizacion = trim($validated['cotizacion']);
+            $inventarioingreso->created_at = Carbon::parse($validated['fecha_creacion']);
+            $inventarioingreso->save();
+
+            $items = $request->items ?? [];
+
+            if (empty($items)) {
+                return;
+            }
+            $subtotal_general = 0;
+
+            foreach ($items as $producto_id => $item) {
+
+                $pivot = $inventarioingreso->productos()
+                    ->where('producto_id', $producto_id)
+                    ->first()
+                    ?->pivot;
+
+                if (!$pivot) continue;
+
+                $precio = floatval($item['precio'] ?? $pivot->precio);
+                $cantidad = floatval($item['cantidad'] ?? $pivot->cantidad);
+                $ingresada = floatval($item['cantidad_ingresada'] ?? $pivot->cantidad_ingresada);
+
+                if ($cantidad < 0) $cantidad = 0;
+                if ($ingresada < 0) $ingresada = 0;
+                if ($ingresada > $cantidad) $ingresada = $cantidad;
+
+                $subtotal = $precio * $cantidad;
+                $subtotal_general += $subtotal;
+
+                $total = ($subtotal_general + $inventarioingreso->adicional - $inventarioingreso->descuento) * 1.18;
+
+                $producto = Producto::find($producto_id);
+
+                if ($producto) {
+                    $ingresada_anterior = $pivot->cantidad_ingresada;
+                    $diferencia = $ingresada - $ingresada_anterior;
+
+                    $producto->stock = $producto->stock + $diferencia;
+                    $producto->save();
+                }
+
+                $inventarioingreso->productos()->updateExistingPivot($producto_id, [
+                    'precio'              => $precio,
+                    'cantidad'            => $cantidad,
+                    'cantidad_ingresada'  => $ingresada,
+                    'subtotal'            => $subtotal,
+                    'updated_at'          => now(),
+                ]);
+            }
+
+
+            $inventarioingreso->subtotal = $subtotal_general;
+            $inventarioingreso->total    = $total;
+            $inventarioingreso->save();
+        });
+
+        return redirect()
+            ->route('inventarioingresos.index')
+            ->with('actualizar-cotizacion', 'Actualización exitosa.');
+    }
     /**
      * Remove the specified resource from storage.
      */
@@ -341,84 +399,82 @@ public function update(Request $request, string $id)
 
 
 
-   public function updaterecepcionar(Request $request, string $id)
-{
-    $request->validate([
-        'guiaingresoalmacen' => 'nullable|string|max:120',
-    ]);
+    public function updaterecepcionar(Request $request, string $id)
+    {
+        $request->validate([
+            'guiaingresoalmacen' => 'nullable|string|max:120',
+        ]);
 
-    $inventarioingreso = Inventarioingreso::with('productos')->findOrFail($id);
+        $inventarioingreso = Inventarioingreso::with('productos')->findOrFail($id);
 
-    if ($inventarioingreso->estado !== 'POR RECOGER') {
-        throw new HttpException(403, 'La orden no está en estado POR RECOGER.');
-    }
-
-    $selected   = collect($request->input('selected_products', []))->map(fn($v)=>(int)$v)->all();
-    $qtyArrived = $request->input('qty_arrived', []);
-
-    // Normaliza la guía: null o '', según prefieras
-    $guia = $request->filled('guiaingresoalmacen')
-        ? Str::limit(trim((string)$request->guiaingresoalmacen), 120)
-        : ''; // <- usa '' para evitar errores si alguna columna es NOT NULL
-
-    DB::transaction(function () use ($inventarioingreso, $selected, $qtyArrived, $guia) {
-        $closing = true;
-
-        foreach ($inventarioingreso->productos as $producto) {
-            $pivot   = $producto->pivot;
-            $pivotId = (int) $pivot->id;
-
-            if (!in_array($pivotId, $selected, true)) {
-                if ($pivot->estado !== 'INGRESADO') $closing = false;
-                continue;
-            }
-
-            $cantidad_recepcionada = (int) ($qtyArrived[$pivotId] ?? 0);
-            if ($cantidad_recepcionada <= 0) {
-                throw new HttpException(422, 'Cantidad inválida para uno de los productos.');
-            }
-
-            $pedido    = (int) $pivot->cantidad;
-            $ingresado = (int) $pivot->cantidad_ingresada;
-            $pendiente = $pedido - $ingresado;
-            if ($cantidad_recepcionada > $pendiente) {
-                throw new HttpException(403, 'NO PUEDES INGRESAR MÁS PRODUCTOS DE LOS QUE HAY POR RECIBIR.');
-            }
-
-            $pivot->cantidad_ingresada = $ingresado + $cantidad_recepcionada;
-            $pivot->guiaingresoalmacen = $guia; // '' si vacío
-            $producto->stock = (int) $producto->stock + $cantidad_recepcionada;
-
-            $log = new Logdetallesinvingreso();
-            $log->detalleinventarioingreso_id = $pivotId;
-            $log->usuario = auth()->user()->name;
-            $log->cantidad_ingresada = $cantidad_recepcionada;
-            $log->guiaingresoalmacen = $guia;     // '' si vacío
-            $log->save();
-
-            if ($inventarioingreso->tipomoneda === 'SOLES') {
-                $producto->ultimoprecio = $pivot->precio;
-            } else {
-                $producto->ultimoprecio = $pivot->precio * (float) $inventarioingreso->cambio_dolar_precio_venta;
-            }
-
-            $pivot->estado = $pivot->cantidad_ingresada >= $pedido ? 'INGRESADO' : $pivot->estado;
-            if ($pivot->estado !== 'INGRESADO') $closing = false;
-
-            $pivot->save();
-            $producto->save();
-
-            // (opcional) recalcular promedio ponderado...
+        if ($inventarioingreso->estado !== 'POR RECOGER') {
+            throw new HttpException(403, 'La orden no está en estado POR RECOGER.');
         }
 
-        if ($closing) $inventarioingreso->estado = 'INGRESADO AL ALMACEN';
-        $inventarioingreso->usuario_recepcionista = auth()->user()->name;
-        $inventarioingreso->save();
-    });
+        $selected   = collect($request->input('selected_products', []))->map(fn($v) => (int)$v)->all();
+        $qtyArrived = $request->input('qty_arrived', []);
 
-    return redirect()->route('inventarioingresos.index')
-        ->with('actualizar-recepcion', 'Recepción exitosa de productos.');
-}
+        $guia = $request->filled('guiaingresoalmacen')
+            ? Str::limit(trim((string)$request->guiaingresoalmacen), 120)
+            : ''; // <- usa '' para evitar errores si alguna columna es NOT NULL
+
+        DB::transaction(function () use ($inventarioingreso, $selected, $qtyArrived, $guia) {
+            $closing = true;
+
+            foreach ($inventarioingreso->productos as $producto) {
+                $pivot = $producto->pivot;
+                $pivotId = (int) $pivot->id;
+
+                if (!in_array($pivotId, $selected, true)) {
+                    if ($pivot->estado !== 'INGRESADO') $closing = false;
+                    continue;
+                }
+                $cantidad_recepcionada = (float) ($qtyArrived[$pivotId] ?? 0);
+                if ($cantidad_recepcionada <= 0) {
+                    throw new HttpException(422, 'Cantidad inválida para uno de los productos.');
+                }
+
+                $pedido    = (float) $pivot->cantidad;
+                $ingresado = (float) $pivot->cantidad_ingresada;
+                $pendiente = $pedido - $ingresado;
+                if ($cantidad_recepcionada > $pendiente) {
+                    throw new HttpException(403, 'NO PUEDES INGRESAR MÁS PRODUCTOS DE LOS QUE HAY POR RECIBIR.');
+                }
+
+                $pivot->cantidad_ingresada = $ingresado + $cantidad_recepcionada;
+                $pivot->guiaingresoalmacen = $guia; // '' si vacío
+                $producto->stock = (float) $producto->stock + $cantidad_recepcionada;
+
+                $log = new Logdetallesinvingreso();
+                $log->detalleinventarioingreso_id = $pivotId;
+                $log->usuario = auth()->user()->name;
+                $log->cantidad_ingresada = $cantidad_recepcionada;
+                $log->guiaingresoalmacen = $guia;     // '' si vacío
+                $log->save();
+
+                if ($inventarioingreso->tipomoneda === 'SOLES') {
+                    $producto->ultimoprecio = $pivot->precio;
+                } else {
+                    $producto->ultimoprecio = $pivot->precio * (float) $inventarioingreso->cambio_dolar_precio_venta;
+                }
+
+                $pivot->estado = $pivot->cantidad_ingresada >= $pedido ? 'INGRESADO' : $pivot->estado;
+                if ($pivot->estado !== 'INGRESADO') $closing = false;
+
+                $pivot->save();
+                $producto->save();
+
+                // (opcional) recalcular promedio ponderado...
+            }
+
+            if ($closing) $inventarioingreso->estado = 'INGRESADO AL ALMACEN';
+            $inventarioingreso->usuario_recepcionista = auth()->user()->name;
+            $inventarioingreso->save();
+        });
+
+        return redirect()->route('inventarioingresos.index')
+            ->with('actualizar-recepcion', 'Recepción exitosa de productos.');
+    }
 
     public function prnpriview(string $id)
     {
@@ -435,9 +491,9 @@ public function update(Request $request, string $id)
         DB::beginTransaction();
         try {
             $inventarioingreso = Inventarioingreso::findOrFail($id);
-            
-            foreach($inventarioingreso->productos as $producto){
-                if($producto->stock < $producto->pivot->cantidad_ingresada){
+
+            foreach ($inventarioingreso->productos as $producto) {
+                if ($producto->stock < $producto->pivot->cantidad_ingresada) {
                     throw new HttpException(403, 'NO HAY SUFICIENTES PRODUCTOS EN EL ALMACEN PARA CANCELAR LA ORDEN.');
                 }
 
@@ -450,7 +506,6 @@ public function update(Request $request, string $id)
             $inventarioingreso->save();
             DB::commit();
             return redirect()->route('inventarioingresos.index')->with('anular-orden-compra', 'Orden de compra anulada con éxito.');
-
         } catch (QueryException $e) {
             DB::rollBack();
 
@@ -482,15 +537,25 @@ public function update(Request $request, string $id)
 
     public function getProductImageByProduct($product)
     {
-        $product = Producto::with('unidad')->find($product);
-
+        $product = Producto::with(['unidad', 'tipo_moneda'])->find($product);
 
         if ($product) {
-            return response()->json(['success' => true, 'product' => $product]);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Product not found']);
+            return response()->json([
+                'success' => true,
+                'product' => [
+                    'unidad' => $product->unidad->nombre ?? '',
+                    'moneda' => $product->tipo_moneda_id
+                ]
+            ]);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Product not found'
+        ]);
     }
+
+
 
     public function getSellingPrice(Request $request)
     {
@@ -541,7 +606,7 @@ public function update(Request $request, string $id)
 
 
     //search ingreso
-   // public function searchIngreso(Request $request)
+    // public function searchIngreso(Request $request)
     //{
     //    $searchString = $request->search_string;
 
@@ -550,22 +615,22 @@ public function update(Request $request, string $id)
     //            $query->where('nombre_producto', 'like', '%' . $searchString . '%');
     //        })
     //        ->orderBy('id', 'desc')
-   //         ->paginate(100);
+    //         ->paginate(100);
 
     //    return view('inventarioingresos.search-results', compact('inventarioingresos'));
-  //  }
-  public function searchIngreso(Request $request)
-{
-    $searchString = $request->search_string;
+    //  }
+    public function searchIngreso(Request $request)
+    {
+        $searchString = $request->search_string;
 
-    $inventarioingresos = Inventarioingreso::where('comprobante_correlativo', 'like', "%{$searchString}%")
-        ->orWhere('cotizacion', 'like', "%{$searchString}%") // <--- NUEVO
-        ->orWhereHas('productos', function ($query) use ($searchString) {
-            $query->where('nombre_producto', 'like', "%{$searchString}%");
-        })
-        ->orderBy('id', 'desc')
-        ->paginate(100);
+        $inventarioingresos = Inventarioingreso::where('comprobante_correlativo', 'like', "%{$searchString}%")
+            ->orWhere('cotizacion', 'like', "%{$searchString}%") // <--- NUEVO
+            ->orWhereHas('productos', function ($query) use ($searchString) {
+                $query->where('nombre_producto', 'like', "%{$searchString}%");
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(100);
 
-    return view('inventarioingresos.search-results', compact('inventarioingresos'));
-}
+        return view('inventarioingresos.search-results', compact('inventarioingresos'));
+    }
 }

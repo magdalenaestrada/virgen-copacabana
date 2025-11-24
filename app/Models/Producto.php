@@ -11,7 +11,7 @@ class Producto extends Model
 
     protected $table = 'productos';
 
-    protected $fillable = ['nombre_producto', 'descripcion_producto','stock','ultimoprecio', 'unidad_id'];
+    protected $fillable = ['nombre_producto', 'descripcion_producto', 'stock', 'ultimoprecio', 'unidad_id', 'tipo_moneda_id'];
 
 
     public function programaciones()
@@ -29,9 +29,12 @@ class Producto extends Model
     {
         return $this->belongsTo(Unidad::class, 'unidad_id');
     }
-
-    public function salidasrapidasdetails(){
+    public function tipo_moneda()
+    {
+        return $this->belongsTo(TipoMoneda::class, 'tipo_moneda_id');
+    }
+    public function salidasrapidasdetails()
+    {
         return $this->hasMany(Invsalidasrapidasdetalles::class);
     }
-
 }

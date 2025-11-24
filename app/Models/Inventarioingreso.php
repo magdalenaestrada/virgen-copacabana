@@ -9,7 +9,7 @@ class Inventarioingreso extends Model
 {
     use HasFactory;
     protected $table = 'inventarioingresos';
-    protected $fillable = ['descripcion', 'subtotal' ,'total','proveedor', 'documento_proveedor', 'tipomoneda','suma','descuento' , 'cotizacion',];
+    protected $fillable = ['descripcion', 'subtotal' ,'total','proveedor', 'documento_proveedor', 'tipomoneda','suma','descuento' , 'cotizacion', 'adicional'];
 
  
 

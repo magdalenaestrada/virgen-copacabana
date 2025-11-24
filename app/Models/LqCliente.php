@@ -10,5 +10,9 @@ class LqCliente extends Model
     use HasFactory;
 
     protected $table = 'lq_clientes';
-    protected $fillable = ['documento', 'nombre', 'creador_id'];
+    protected $fillable = ['codigo','documento', 'nombre', 'creador_id'];
+
+    public function lotes(){
+        return $this->hasMany(Lote::class, "lq_cliente_id");
+    }
 }

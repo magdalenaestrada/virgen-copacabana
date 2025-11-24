@@ -38,23 +38,24 @@
                                 <svg fill="#fff" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                     viewBox="0 0 50 50">
                                     <path d="M28.8125 .03125L.8125 5.34375C.339844
-                                        5.433594 0 5.863281 0 6.34375L0 43.65625C0
-                                        44.136719 .339844 44.566406 .8125 44.65625L28.8125
-                                        49.96875C28.875 49.980469 28.9375 50 29 50C29.230469
-                                        50 29.445313 49.929688 29.625 49.78125C29.855469 49.589844
-                                        30 49.296875 30 49L30 1C30 .703125 29.855469 .410156 29.625
-                                        .21875C29.394531 .0273438 29.105469 -.0234375 28.8125 .03125ZM32
-                                        6L32 13L34 13L34 15L32 15L32 20L34 20L34 22L32 22L32 27L34 27L34
-                                        29L32 29L32 35L34 35L34 37L32 37L32 44L47 44C48.101563 44 49
-                                        43.101563 49 42L49 8C49 6.898438 48.101563 6 47 6ZM36 13L44
-                                        13L44 15L36 15ZM6.6875 15.6875L11.8125 15.6875L14.5 21.28125C14.710938
-                                        21.722656 14.898438 22.265625 15.0625 22.875L15.09375 22.875C15.199219
-                                        22.511719 15.402344 21.941406 15.6875 21.21875L18.65625 15.6875L23.34375
-                                        15.6875L17.75 24.9375L23.5 34.375L18.53125 34.375L15.28125
-                                        28.28125C15.160156 28.054688 15.035156 27.636719 14.90625
-                                        27.03125L14.875 27.03125C14.8125 27.316406 14.664063 27.761719
-                                        14.4375 28.34375L11.1875 34.375L6.1875 34.375L12.15625 25.03125ZM36
-                                        20L44 20L44 22L36 22ZM36 27L44 27L44 29L36 29ZM36 35L44 35L44 37L36 37Z"></path>
+                                                5.433594 0 5.863281 0 6.34375L0 43.65625C0
+                                                44.136719 .339844 44.566406 .8125 44.65625L28.8125
+                                                49.96875C28.875 49.980469 28.9375 50 29 50C29.230469
+                                                50 29.445313 49.929688 29.625 49.78125C29.855469 49.589844
+                                                30 49.296875 30 49L30 1C30 .703125 29.855469 .410156 29.625
+                                                .21875C29.394531 .0273438 29.105469 -.0234375 28.8125 .03125ZM32
+                                                6L32 13L34 13L34 15L32 15L32 20L34 20L34 22L32 22L32 27L34 27L34
+                                                29L32 29L32 35L34 35L34 37L32 37L32 44L47 44C48.101563 44 49
+                                                43.101563 49 42L49 8C49 6.898438 48.101563 6 47 6ZM36 13L44
+                                                13L44 15L36 15ZM6.6875 15.6875L11.8125 15.6875L14.5 21.28125C14.710938
+                                                21.722656 14.898438 22.265625 15.0625 22.875L15.09375 22.875C15.199219
+                                                22.511719 15.402344 21.941406 15.6875 21.21875L18.65625 15.6875L23.34375
+                                                15.6875L17.75 24.9375L23.5 34.375L18.53125 34.375L15.28125
+                                                28.28125C15.160156 28.054688 15.035156 27.636719 14.90625
+                                                27.03125L14.875 27.03125C14.8125 27.316406 14.664063 27.761719
+                                                14.4375 28.34375L11.1875 34.375L6.1875 34.375L12.15625 25.03125ZM36
+                                                20L44 20L44 22L36 22ZM36 27L44 27L44 29L36 29ZM36 35L44 35L44 37L36 37Z">
+                                    </path>
                                 </svg>
 
                                 Descargar
@@ -77,6 +78,7 @@
                     <div class="card-body  ">
                         <a href="{{ route('productosfamilias.index') }}" class="btn btn-primary mx-2">Familias de
                             Productos</a>
+                            
 
                         <div class="table-responsive">
                             <table id="products-table" class="table table-striped  table-hover">
@@ -88,33 +90,33 @@
                                         <th scope="col">
                                             {{ __('NOMBRE') }}
                                         </th>
-    
-    
-    
+
+
+
                                         <th scope="col">
                                             {{ __('STOCK') }}
                                         </th>
-    
+
                                         <th scope="col" class="text-center">
                                             {{ __('V.U.') }}
                                         </th>
-    
-    
-    
-                                     
-    
+
+
+
+
+
                                         <th scope="col">
                                             {{ __('UNIDAD') }}
                                         </th>
-    
-    
-    
+
+
+
                                         <th scope="col">
                                             {{ __('ACCIÓN') }}
                                         </th>
                                     </tr>
                                 </thead>
-    
+
                                 <tbody style="font-size: 13px">
                                     @if (count($productos) > 0)
                                         @foreach ($productos as $producto)
@@ -122,19 +124,30 @@
                                                 <td scope="row">
                                                     {{ $producto->id }}
                                                 </td>
-    
+
                                                 <td scope="row">
                                                     {{ $producto->nombre_producto }}
-                                                    @if ($producto->stock == 0)
-                                                        <span class="text-danger"
-                                                            style="font-style: Monospace;font-weight:600; font-size: 16px"> (SIN
-                                                            STOCK)</span>
+                                                    @php
+                                                        $stock = $producto->stock;
+                                                    @endphp
+
+                                                    @if ($stock == 0)
+                                                        <span class="text-danger fw-bold"
+                                                            style="font-family: Monospace;font-weight:600; font-size:16px">
+                                                            (SIN STOCK)
+                                                        </span>
+                                                    @elseif ($stock <= 2)
+                                                        <span class="text-warning fw-bold"
+                                                            style="font-family: Monospace;font-weight:600; font-size:16px">
+                                                            (STOCK BAJO)
+                                                        </span>
                                                     @endif
+
                                                 </td>
-    
-    
-    
-    
+
+
+
+
                                                 <td scope="row">
                                                     @if ($producto->stock)
                                                         {{ $producto->stock }}
@@ -142,7 +155,7 @@
                                                         {{ __('-') }}
                                                     @endif
                                                 </td>
-    
+
                                                 <td scope="row" class="text-center">
                                                     @if ($producto->precio)
                                                         s/{{ $producto->precio }}
@@ -150,8 +163,8 @@
                                                         {{ __('-') }}
                                                     @endif
                                                 </td>
-    
-    
+
+
                                                 <td scope="row">
                                                     @if ($producto->unidad_nombre)
                                                         {{ $producto->unidad_nombre }}
@@ -159,9 +172,9 @@
                                                         {{ __('-') }}
                                                     @endif
                                                 </td>
-    
-    
-    
+
+
+
                                                 <td style="min-width: 150px">
                                                     <div class="btn-group">
                                                         <div class="">
@@ -169,9 +182,9 @@
                                                                 href="{{ route('productos.show', ['producto' => $producto->id, 'page' => request()->page]) }}">
                                                                 {{ __('VER') }}
                                                             </a>
-    
+
                                                         </div>
-    
+
                                                         <div class="">
                                                             <a class="btn btn-outline-info btn-sm ml-1"
                                                                 href="{{ route('productos.edit', [$producto->id]) }}"
@@ -179,9 +192,9 @@
                                                                 data-target="#ModalEditar{{ $producto->id }}">
                                                                 {{ __('EDITAR') }}
                                                             </a>
-    
+
                                                         </div>
-    
+
                                                         <div class="">
                                                             <form class="eliminar-producto"
                                                                 action="{{ route('productos.destroy', $producto->id) }}"
@@ -193,11 +206,12 @@
                                                                     style="margin-left: 5px;">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                         viewBox="0 0 39 7" class="bin-top">
-    
+
                                                                         <line stroke-width="4" stroke="white" y2="5"
                                                                             x2="39" y1="5"></line>
                                                                         <line stroke-width="3" stroke="white" y2="1.5"
-                                                                            x2="26.0357" y1="1.5" x1="12"></line>
+                                                                            x2="26.0357" y1="1.5" x1="12">
+                                                                        </line>
                                                                     </svg>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                         viewBox="0 0 33 39" class="bin-bottom">
@@ -206,12 +220,15 @@
                                                                                 d="M0 0H33V35C33 37.2091 31.2091 39 29 39H4C1.79086 39 0 37.2091 0 35V0Z">
                                                                             </path>
                                                                         </mask>
-                                                                        <path mask="url(#path-1-inside-1_8_19)" fill="white"
+                                                                        <path mask="url(#path-1-inside-1_8_19)"
+                                                                            fill="white"
                                                                             d="M0 0H33H0ZM37 35C37 39.4183 33.4183 43 29 43H4C-0.418278 43 -4 39.4183 -4 35H4H29H37ZM4 43C-0.418278 43 -4 39.4183 -4 35V0H4V35V43ZM37 0V35C37 39.4183 33.4183 43 29 43V35V0H37Z">
                                                                         </path>
-                                                                        <path stroke-width="4" stroke="white" d="M12 6L12 29">
+                                                                        <path stroke-width="4" stroke="white"
+                                                                            d="M12 6L12 29">
                                                                         </path>
-                                                                        <path stroke-width="4" stroke="white" d="M21 6V29">
+                                                                        <path stroke-width="4" stroke="white"
+                                                                            d="M21 6V29">
                                                                         </path>
                                                                     </svg>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -223,41 +240,31 @@
                                                                 </button>
                                                             </form>
                                                         </div>
-    
-    
+
+
                                                         <div>
-                                                            <a class="Btn-rotacion" href="{{route('product.dailyrotation', $producto->id)}}">
+                                                            <a class="Btn-rotacion"
+                                                                href="{{ route('product.dailyrotation', $producto->id) }}">
                                                                 <div class="svgWrapper">
-                                                                  <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    fill="none"
-                                                                    viewBox="0 0 42 42"
-                                                                    class="svgIcon"
-                                                                  >
-                                                                    <path
-                                                                      stroke-width="5"
-                                                                      stroke="#fff"
-                                                                      d="M9.14073 2.5H32.8593C33.3608 2.5 33.8291 2.75065 34.1073 3.16795L39.0801 10.6271C39.3539 11.0378 39.5 11.5203 39.5 12.0139V21V37C39.5 38.3807 38.3807 39.5 37 39.5H5C3.61929 39.5 2.5 38.3807 2.5 37V21V12.0139C2.5 11.5203 2.6461 11.0378 2.91987 10.6271L7.89266 3.16795C8.17086 2.75065 8.63921 2.5 9.14073 2.5Z"
-                                                                    ></path>
-                                                                    <rect
-                                                                      stroke-width="3"
-                                                                      stroke="#fff"
-                                                                      rx="2"
-                                                                      height="4"
-                                                                      width="11"
-                                                                      y="18.5"
-                                                                      x="15.5"
-                                                                    ></rect>
-                                                                    <path stroke-width="5" stroke="#fff" d="M1 12L41 12"></path>
-                                                                  </svg>
-                                                                  <div class="text">Rotación</div>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                        viewBox="0 0 42 42" class="svgIcon">
+                                                                        <path stroke-width="5" stroke="#fff"
+                                                                            d="M9.14073 2.5H32.8593C33.3608 2.5 33.8291 2.75065 34.1073 3.16795L39.0801 10.6271C39.3539 11.0378 39.5 11.5203 39.5 12.0139V21V37C39.5 38.3807 38.3807 39.5 37 39.5H5C3.61929 39.5 2.5 38.3807 2.5 37V21V12.0139C2.5 11.5203 2.6461 11.0378 2.91987 10.6271L7.89266 3.16795C8.17086 2.75065 8.63921 2.5 9.14073 2.5Z">
+                                                                        </path>
+                                                                        <rect stroke-width="3" stroke="#fff"
+                                                                            rx="2" height="4" width="11"
+                                                                            y="18.5" x="15.5"></rect>
+                                                                        <path stroke-width="5" stroke="#fff"
+                                                                            d="M1 12L41 12"></path>
+                                                                    </svg>
+                                                                    <div class="text">Rotación</div>
                                                                 </div>
                                                             </a>
                                                         </div>
-    
+
                                                     </div>
-    
-    
+
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -271,7 +278,7 @@
                                 </tbody>
                             </table>
                         </div>
-                  
+
 
 
 

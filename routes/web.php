@@ -35,12 +35,18 @@ use App\Http\Controllers\InvherramientasController;
 use App\Http\Controllers\PesoController;
 use App\Http\Controllers\PosicionController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\LoteController;
 use App\Http\Controllers\LqAdelantoController;
 use App\Http\Controllers\LqClienteController;
 use App\Http\Controllers\LqDevolucionController;
 use App\Http\Controllers\LqSociedadController;
 use App\Http\Controllers\OrdenServicioController;
 use App\Http\Controllers\PersonaController;
+use App\Http\Controllers\PesoOtraBalController;
+use App\Http\Controllers\PlProgramacionController;
+use App\Http\Controllers\ProcesoController;
+use App\Http\Controllers\ReactivoController;
+use App\Http\Controllers\ReactivoDetalleController;
 use App\Http\Controllers\TsBancoController;
 use App\Http\Controllers\TscajaController;
 use App\Http\Controllers\TsCuentaController;
@@ -66,6 +72,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('roles/{roleId}/give-permissions', [RoleController::class, 'addPermissionToRole']);
     Route::put('roles/{roleId}/give-permissions', [RoleController::class, 'givePermissionToRole']);
+    Route::get('/productos/filter', [ProductoController::class, 'filter'])->name('productos.filter');
 
     Route::resource('users', UserController::class);
     Route::get('users/{userId}/delete', [UserController::class, 'destroy']);
@@ -176,6 +183,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('export-excel-reportescuentas', [TsReporteDiarioCuentasController::class, 'export_excel'])->name('tsreportescuentas.export-excel');
     Route::get('export-contable-excel-reportescuentas', [TsReporteDiarioCuentasController::class, 'export_excel_contable'])->name('tsreporteContablecuentas.export-excel');
 
+
     //ANULAR ROUTES
     Route::get('/inventarioingresos/{id}/anular', [InventarioingresoController::class, 'anular'])->name('inventarioingresos.anular');
     Route::get('/invsalidasrapidas/{id}/anular', [InvsalidasrapidasController::class, 'anular'])->name('invsalidasrapidas.anular');
@@ -209,7 +217,11 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('search.tsreportescuentas');
     Route::get('/search-tssalidascuentas', [TsSalidacuentaController::class, 'searchSalidaCuenta'])->name('search.salidascuentas');
     Route::get('/search-tsingresoscuentas', [TsIngresoCuentaController::class, 'searchIngresosCuentas'])->name('search.ingresoscuentas');
-    Route::get('/search-salidasmiscajas', [TsMicajaController::class, 'searchSalidasMisCajas'])->name(name: 'search.salidasmiscajas');
+    Route::get('/search-salidasmiscajas', [TsMicajaController::class, 'searchSalidasMisCajas'])->name('search.salidasmiscajas');
+    //AQUI ESTÁ LA CORRECION DE INGRESOS RAPIDOS
+
+    Route::get('/search-ingreso-rapido', [InvingresosrapidosController::class, 'buscar'])
+        ->name('invingresosrapidos.buscar');
 
     //FIND DOCUMENTO BY PERSONA AJAX
     Route::get('/search-documento-persona-by-name', [PersonaController::class, 'searchPersonaDocumento'])->name('autocompdoc.persona');
@@ -265,10 +277,48 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('search.ordenservicio');
     Route::get('/orden-servicio/{id}/print', [OrdenServicioController::class, 'print'])->name('orden-servicio.print');
     Route::get('/orden-servicio/{id}/comprobante', [OrdenServicioController::class, 'comprobante'])->name('orden-servicio.comprobante');
-
     Route::post('/orden-servicio/{id}/cancelar', [OrdenServicioController::class, 'cancelar'])->name('orden-servicio.cancelar');
     Route::post('/orden-servicio/{id}/proceso', [OrdenServicioController::class, 'proceso'])->name('orden-servicio.proceso');
     Route::post('/orden-servicio/{id}/finalizar', [OrdenServicioController::class, 'finalizar'])->name('orden-servicio.finalizar');
+
+    //reactivo 
+    Route::post('/reactivos', [ReactivoController::class, 'store'])->name('reactivos.store');
+    Route::get('/reactivos', [ReactivoController::class, 'index'])->name('reactivos');
+    Route::post('/reactivosdetalles', [ReactivoDetalleController::class, 'store'])->name('reactivosdetalles.store');
+    Route::delete('/reactivos/destroy', [ReactivoController::class, 'destroy'])->name('reactivos.destroy');
+    Route::delete('/reactivosdetalles/destroy', [ReactivoDetalleController::class, 'destroy'])->name('reactivosdetalles.destroy');
+
+
+    //lotes
+    Route::post('/lotes', [LoteController::class, 'store'])->name('lotes.store');
+    Route::get('/lotes', [LoteController::class, 'index'])->name('lotes');
+    Route::put('/lotes/{id}', [LoteController::class, 'update'])->name('lotes.update');
+    Route::delete('/lotes/destroy', [LoteController::class, 'destroy'])->name('lotes.destroy');
+    Route::get('/lotes/buscar', [LoteController::class, 'buscar'])->name('lotes.buscar');
+    Route::get('/lotes/{id}/pesos', [LoteController::class, 'pesosEnCancha'])->name('lotes.pesos');
+
+    //procesos
+    Route::get('/procesos', [ProcesoController::class, 'index'])->name('procesos');
+    Route::get('/procesos/{id}/edit', [ProcesoController::class, 'edit'])->name('procesos.edit');
+    Route::post('/procesos', [ProcesoController::class, 'store'])->name('procesos.store');
+    Route::get('/procesos/{id}/eliminar', [ProcesoController::class, 'destroy'])->name('procesos.delete');
+
+    //pesos
+    Route::get('/pesos', [PesoController::class, 'index'])->name('pesos.index');
+    Route::post('/pesos', [PesoController::class, 'pesos'])->name('pesos');
+    Route::put('/pesos-update/{id}', [PesoController::class, 'update'])->name('pesos.update');
+
+    Route::prefix('programaciones')->group(function () {
+        Route::get('/', [PlProgramacionController::class, 'index'])->name('programaciones.index');
+        Route::post('/', [PlProgramacionController::class, 'store'])->name('programaciones.store');
+        Route::put('/{id}', [PlProgramacionController::class, 'update'])->name('programaciones.update');
+        Route::delete('/{id}', [PlProgramacionController::class, 'destroy'])->name('programaciones.destroy');
+        Route::get('/{id}/pesos', [PesoController::class, 'pesosByProgramacion']);
+        Route::get('/{id}/pesos', [PlProgramacionController::class, 'datatable']);
+    });
+
+    Route::post('/otras-balanza/{id}', [PesoOtraBalController::class, 'store'])->name('otrasBalanza.store');
+    Route::delete('/otras-balanza/{id}', [PesoOtraBalController::class, 'destroy'])->name('otrasBalanza.destroy');
 });
 
 Route::get('/', function () {

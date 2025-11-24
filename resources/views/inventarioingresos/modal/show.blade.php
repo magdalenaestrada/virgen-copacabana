@@ -64,12 +64,12 @@
                             <input class="form-control form-control-sm"
                                 value="{{ $inventarioingreso->usuario_recepcionista }}" disabled>
                         </div>
-                         <div class="form-group col-md-4 g-3">
+                        <div class="form-group col-md-4 g-3">
                             <label for="cotizacion" class="text-sm">
                                 {{ __('CODIGO COTIZACION') }}
                             </label>
-                            <input class="form-control form-control-sm"
-                                value="{{ $inventarioingreso->cotizacion }}" disabled>
+                            <input class="form-control form-control-sm" value="{{ $inventarioingreso->cotizacion }}"
+                                disabled>
                         </div>
                     </div>
 
@@ -95,20 +95,20 @@
                             </div>
 
 
-                            <div class="form-group col-md-12 g-3" >
+                            <div class="form-group col-md-12 g-3">
                                 <label for="descripcion" class="text-sm">
                                     {{ __('OBSERVACIÓN') }}
                                 </label>
                                 <textarea class="form-control form-control-sm" disabled>{{ $inventarioingreso->descripcion ? $inventarioingreso->descripcion : 'No hay observación' }}</textarea>
                             </div>
-                            
+
 
                         </div>
                     @endif
 
 
 
-                    
+
 
 
 
@@ -181,7 +181,8 @@
 
                                         <td class="text-end">
                                             <div class="text-right">
-                                                {{ $inventarioingreso->suma>0 ? number_format($inventarioingreso->suma, 2) : number_format($inventarioingreso->subtotal, 2)  }}</div>
+                                                {{ $inventarioingreso->suma > 0 ? number_format($inventarioingreso->suma, 2) : number_format($inventarioingreso->subtotal, 2) }}
+                                            </div>
                                         </td>
                                         <td></td>
                                     </tr>
@@ -194,10 +195,11 @@
                     </div>
 
                     <p class="text-center h6 mb-3"> DESCUENTO: {{ number_format($inventarioingreso->descuento, 2) }}
-                        </p>
-
+                    </p>
+                    <p class="text-center h6 mb-3"> ADICIONAL: {{ number_format($inventarioingreso->adicional, 2) }}
+                    </p>
                     <p class="text-center h6 mb-3"> SUBTOTAL: {{ number_format($inventarioingreso->subtotal, 2) }}
-                       </p>
+                    </p>
                     <p class="text-center h4 mb-3"> COSTO TOTAL: {{ number_format($inventarioingreso->total, 2) }}
                         {{ $inventarioingreso->tipomoneda }}</p>
 

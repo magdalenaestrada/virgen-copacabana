@@ -8,14 +8,10 @@ use App\Models\Invingresosrapidosdetalles;
 use App\Models\Producto;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Models\Proveedor;
+use Illuminate\Support\Facades\Log;
 
 class InvingresosrapidosController extends Controller
 {
-
-
-
-
-
     public function __construct()
     {
         $this->middleware('permission:ver producto', ['only' => ['index', 'show']]);
@@ -182,5 +178,22 @@ class InvingresosrapidosController extends Controller
             // Handle other unexpected errors
             return back()->withInput()->with('error', 'Error al procesar la solicitud: ' . $e->getMessage());
         }
+    }
+
+    public function buscar(Request $request)
+    {
+        $searchString = $request->search_string;
+
+        $invingresosrapidos = Invingresosrapidos::with(['proveedor', 'productos'])
+            ->where('comprobante_correlativo', 'like', "%{$searchString}%")
+            ->orWhereHas('proveedor', function ($query) use ($searchString) {
+                $query->where('razon_social', 'like', "%{$searchString}%");
+            })
+            ->orWhereHas('productos', function ($query) use ($searchString) {
+                $query->where('nombre_producto', 'like', "%{$searchString}%");
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(100);
+        return view('invingresosrapidos.partials', compact('invingresosrapidos'))->render();
     }
 }

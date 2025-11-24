@@ -2,11 +2,8 @@
 
 @section('content')
     <div class="container">
-
         <br>
-
         <div class="card">
-
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-6">
@@ -14,17 +11,13 @@
                             {{ __('CREAR ORDEN DE COMPRA') }}
                         </h6>
                     </div>
-
-
                     <div class="col-md-6 text-right">
                         <a class="btn btn-danger btn-sm" href="{{ route('inventarioingresos.index') }}">
                             {{ __('VOLVER') }}
                         </a>
                     </div>
                 </div>
-
             </div>
-
             <div class="card-body table-responsive">
                 <form method="POST" action="{{ route('inventarioingresos.store') }}">
                     @csrf
@@ -53,6 +46,9 @@
 
                                 <th class="text-sm">
                                     {{ __('VALOR UNITARIO') }}
+                                </th>
+                                <th class="text-sm">
+                                    {{ __('MONEDA') }}
                                 </th>
                                 <th class="text-sm">
                                     {{ __('CANTIDAD') }}
@@ -112,6 +108,17 @@
                                     <input id="product_price[]" name="product_price[]" required
                                         class="form-control form-control-sm product-price" placeholder="0.0"></input>
                                 </td>
+                                <td>
+                                    <select name="tipomoneda_producto[]" class="form-control form-control-sm tipomoneda_producto"
+                                        style="width: 100px; height:30px" required>
+                                        <option value="">Seleccionar</option>
+
+                                        @foreach ($tipos_monedas as $moneda)
+                                            <option value="{{ $moneda->id }}">{{ $moneda->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+
                                 <td>
                                     <input name="qty[]" class="form-control product-qty form-control-sm" required
                                         placeholder="0.0">
@@ -275,7 +282,7 @@
 
                     <div class="row mt-4 justify-content-end">
 
-                        <div class="d-flex col-md-3 align-items-center justify-content-between">
+                        <div class="d-flex col-md-2 align-items-center justify-content-between">
 
                             <span style="margin-right:5px"><b>SUMA:</b></span>
                             <input id="product_sub_total" name="product_sub_total"
@@ -283,14 +290,20 @@
 
                         </div>
 
-                        <div class="d-flex col-md-3 align-items-center justify-content-between">
+                        <div class="d-flex col-md-2 align-items-center justify-content-between">
 
                             <span style="margin-right:5px"><b>DESCUENTO:</b></span>
                             <input id="product_descuento" name="product_descuento"
                                 class="product_descuento form-control form-control-sm" value="0.0"></input>
 
                         </div>
+                        <div class="d-flex col-md-2 align-items-center justify-content-between">
 
+                            <span style="margin-right:5px"><b>ADICIONAL:</b></span>
+                            <input id="product_adicional" name="product_adicional"
+                                class="product_adicional form-control form-control-sm" value="0.0"></input>
+
+                        </div>
                         <div class="d-flex col-md-3 align-items-center justify-content-between">
 
                             <span style="margin-right:5px"><b>SUBTOTAL:</b></span>
@@ -343,14 +356,15 @@
 
         function calculateGrandTotal() {
             var subTotal = 0;
-            var descuento = $('#product_descuento').val();
+            var descuento = parseFloat($('#product_descuento').val()) || 0;
+            var servicio = parseFloat($('#product_adicional').val()) || 0;
             var after_descuento = 0;
             var grandTotal = 0;
 
             $(".product-total").each(function() {
                 subTotal += parseFloat($(this).val()) || 0;
             });
-            after_descuento = (subTotal - descuento)
+            after_descuento = (subTotal - descuento + servicio)
             grandTotal = (after_descuento) * 1.18
 
 
@@ -391,12 +405,13 @@
 
 
         //calcular los totales
-        $(document).on("input", ".cart-product, .product-qty, .product-price, .product_descuento", function() {
-            var row = $(this).closest('tr');
-            updateRowTotal(row);
-            calculateGrandTotal();
+        $(document).on("input", ".cart-product, .product-qty, .product-price, .product_descuento, .product_adicional",
+            function() {
+                var row = $(this).closest('tr');
+                updateRowTotal(row);
+                calculateGrandTotal();
 
-        });
+            });
 
         //llenar campos basado en el producto encontrado
         $(document).on("change", ".cart-product", function() {
@@ -404,24 +419,23 @@
             var url = "{{ route('get.product-image.by.product', ['product' => ':product']) }}";
             url = url.replace(':product', product);
             var currentRow = $(this).closest('tr');
-
             $.ajax({
                 url: url,
                 type: 'GET',
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        var product = response.product;
-                        productUnidad = currentRow.find('.product-unidad');
-                        productUnidad.val(product.unidad.nombre);
 
+                        let product = response.product;
 
-                    } else {
-                        // Handle error: product not found
+                        currentRow.find('.product-unidad').val(product.unidad);
+
+                        currentRow.find('.tipomoneda_producto').val(product.moneda);
+
                     }
                 },
                 error: function(xhr, status, error) {
-                    // Handle AJAX errors
+                    console.log("Error AJAX:", error);
                 }
             });
         });

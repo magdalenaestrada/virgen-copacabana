@@ -19,86 +19,112 @@
                 </div>
             </div>
             <div class="card-body">
-                    <form class="editar-producto" action="{{ route('productos.update', $producto->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="row">
+                <form class="editar-producto" action="{{ route('productos.update', $producto->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="row">
 
-                            <div class="form-group col-md-12 g-3">
-                                <label for="nombre_producto" class="text-muted">
-                                    {{ __('NOMBRE DEL PRODUCTO') }}
+                        <div class="form-group col-md-12 g-3">
+                            <label for="nombre_producto" class="text-muted">
+                                {{ __('NOMBRE DEL PRODUCTO') }}
+                            </label>
+                            <span class="text-danger">(*)</span>
+                            <input type="text" value="{{ $producto->nombre_producto }}" name="nombre_producto"
+                                id="nombre_producto" class="form-control @error('nombre_producto') is-invalid @enderror"
+                                value="{{ old('nombre_producto') }}" placeholder="Ingrese un nombre para este producto">
+                            @error('nombre_producto')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group col-md-12 g-3">
+                            <label for="productosfamilia_id" class="text-success">
+                                <b>
+                                    {{ __('FAMILIA PADRE') }}
+                                </b>
+                            </label>
+                            <select name="productosfamilia_id" id="productosfamilia_id"
+                                class="form-control @error('productosfamilia_id') is-invalid @enderror" aria-label="">
+                                <option selected disabled>{{ __('-- Seleccione una opción') }}</option>
+                                @foreach ($productosfamilias as $familia)
+                                    <option value="{{ $familia->id }}"
+                                        {{ old('productosfamilia_id', $producto->productosfamilia_id) == $familia->id ? 'selected' : '' }}>
+                                        {{ $familia->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <div class="form-group mt-4 g-3">
+                                <label for="unidad_id" class="text-muted">
+                                    {{ __('UNIDADES') }}
                                 </label>
-                                <span class="text-danger">(*)</span>
-                                <input type="text" value="{{$producto->nombre_producto}}" name="nombre_producto" id="nombre_producto" class="form-control @error('nombre_producto') is-invalid @enderror" value="{{ old('nombre_producto') }}" placeholder="Ingrese un nombre para este producto">
-                                @error('nombre_producto')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <select name="unidad_id" id="unidad_id"
+                                    class="form-control @error('unidad_id') is-invalid @enderror" aria-label="Unidad">
+                                    <option selected disabled>{{ __('-- Seleccione una opción') }}</option>
+                                    @foreach ($unidades as $unidad)
+                                        <option value="{{ $unidad->id }}"
+                                            {{ old('unidad_id', $producto->unidad_id) == $unidad->id ? 'selected' : '' }}>
+                                            {{ $unidad->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('unidad_id')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
                                 @enderror
                             </div>
-
-                            <div class="form-group col-md-12 g-3">
-                                    <label for="productosfamilia_id" class="text-success">
-                                        <b>
-                                            {{ __('FAMILIA PADRE') }}
-                                        </b>
+                            <div class="form-group mt-4 g-3">
+                                <label for="tipo_moneda_id" class="text-muted">
+                                    {{ __('TIPO DE MONEDA') }}
+                                </label>
+                                <select name="tipo_moneda_id" id="tipo_moneda_id"
+                                    class="form-control @error('tipo_moneda_id') is-invalid @enderror" aria-label="tipo_moneda">
+                                    <option selected disabled>{{ __('-- Seleccione una opción') }}</option>
+                                    @foreach ($tipos_monedas as $tipo_moneda)
+                                        <option value="{{ $tipo_moneda->id }}"
+                                            {{ old('tipo_moneda_id', $producto->tipo_moneda_id) == $tipo_moneda->id ? 'selected' : '' }}>
+                                            {{ $tipo_moneda->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('unidad_id')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            @if ($producto->precio == 0)
+                                <div class="form-group col-md-12 g-3">
+                                    <label for="valor_promedio" class="text-muted">
+                                        {{ __('VALOR PROMEDIO') }}
                                     </label>
-                                    <select name="productosfamilia_id" id="productosfamilia_id"
-                                        class="form-control @error('productosfamilia_id') is-invalid @enderror" aria-label="">
-                                        <option selected disabled>{{ __('-- Seleccione una opción') }}</option>
-                                        @foreach ($productosfamilias as $familia)
-                                                <option value="{{ $familia->id }}"
-                                                    {{ old('productosfamilia_id') == $familia->id ? 'selected' : '' }}>
-                                                    {{ $familia->nombre }}
-                                                </option>
-                                        @endforeach
-                                    </select>
-
-                                    <div class="form-group mt-4 g-3">
-                                        <label for="unidad_id" class="text-muted">
-                                            {{ __('UNIDADES') }}
-                                        </label>
-                                        <select name="unidad_id" id="unidad_id" class="form-control @error('unidad_id') is-invalid @enderror" aria-label="Unidad">
-                                            <option selected disabled>{{ __('-- Seleccione una opción') }}</option>
-                                            @foreach ($unidades as $unidad)
-                                                <option value="{{ $unidad->id }}" {{ old('unidad_id') == $unidad->id ? 'selected' : '' }}>
-                                                    {{ $unidad->nombre }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('unidad_id')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                    
-                                    @if($producto->precio==0)
-                                    <div class="form-group col-md-12 g-3">
-                                        <label for="valor_promedio" class="text-muted">
-                                            {{ __('VALOR PROMEDIO') }}
-                                        </label>
-                                        <input type="text" name="valor_promedio" id="valor_promedio" class="form-control @error('valor_promedio') is-invalid @enderror" value="{{ old('valor_promedio') }}" placeholder="Ingrese  el valor promedio de este producto">
-                                        @error('valor_promedio')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    @endif
-
-
-                                    @error('estado_id')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
+                                    <input type="text" name="valor_promedio" id="valor_promedio"
+                                        class="form-control @error('valor_promedio') is-invalid @enderror"
+                                        value="{{ old('valor_promedio') }}"
+                                        placeholder="Ingrese  el valor promedio de este producto">
+                                    @error('valor_promedio')
+                                        <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                            </div>
+                                </div>
+                            @endif
 
 
-                            <div class="col-md-12 text-right mt-2 g-3">
-                                <button type="submit" class="btn btn-secondary btn-sm">
-                                    {{ __('ACTUALIZAR PRODUCTO') }}
-                                </button>
-                            </div>
+                            @error('estado_id')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
-                    </form>
+
+
+                        <div class="col-md-12 text-right mt-2 g-3">
+                            <button type="submit" class="btn btn-secondary btn-sm">
+                                {{ __('ACTUALIZAR PRODUCTO') }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

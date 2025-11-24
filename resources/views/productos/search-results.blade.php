@@ -7,14 +7,19 @@
 
             <td scope="row">
                 {{ $producto->nombre_producto }}
-                @if ($producto->stock == 0)
-                    <span class="text-danger"
-                        style="font-style: Monospace;font-weight:600; font-size: 16px"> (SIN
-                        STOCK)</span>
+                @php
+                    $stock = $producto->stock;
+                @endphp
+                @if ($stock == 0)
+                    <span class="text-danger fw-bold" style="font-family: Monospace;font-weight:600; font-size:16px">
+                        (SIN STOCK)
+                    </span>
+                @elseif ($stock <= 2)
+                    <span class="text-warning fw-bold" style="font-family: Monospace;font-weight:600; font-size:16px">
+                        (STOCK BAJO)
+                    </span>
                 @endif
             </td>
-
-
 
             <td scope="row">
                 @if ($producto->stock)
@@ -96,7 +101,7 @@
                     </div>
 
                     <div>
-                        <a class="Btn-rotacion" href="{{route('product.dailyrotation', $producto->id)}}">
+                        <a class="Btn-rotacion" href="{{ route('product.dailyrotation', $producto->id) }}">
                             <div class="svgWrapper">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 42 42"
                                     class="svgIcon">
